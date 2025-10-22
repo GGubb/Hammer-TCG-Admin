@@ -1,0 +1,529 @@
+/* =================== RESET Y TIPOGRAFÍA =================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+/* =================== ESTILOS GENERALES DEL BODY =================== */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  background: linear-gradient(135deg, #000 0%, #111 100%);
+  color: #fff;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+/* =================== HEADER / LOGO Y TÍTULO =================== */
+header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px 0;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.7);
+  z-index: 1000;
+}
+
+header h1 {
+  font-size: 4rem;
+  margin-top: 30px;
+  color: #ffd700;
+  text-shadow: 2px 2px 5px rgba(0,0,0,0.8);
+}
+
+/* =================== LOGOS =================== */
+/* Logo superior izquierdo solo en login */
+#login-logo {
+  position: absolute;
+  top: 20px;
+  left: 10px;
+  width: 100px;
+  height: auto;
+  display: block;
+  z-index: 1001;
+}
+
+/* Logo principal oculto por defecto (aparece tras login) */
+#inicio-logo {
+  display: none;
+  width: 150px;
+  height: auto;
+  margin-bottom: 5px;
+}
+
+/* =================== LOGIN =================== */
+#login-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  background-color: #1c1c1c;
+  padding: 50px 60px;
+  border-radius: 15px;
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
+  min-width: 350px;
+  margin-top: 150px;
+  border: 2px solid #444;
+  transition: transform 0.3s;
+}
+
+#login-container:hover {
+  transform: translateY(-5px);
+}
+
+#login-container h2 {
+  margin-bottom: 20px;
+  font-size: 2rem;
+  color: #ffd700;
+  text-shadow: 1px 1px 3px #000;
+}
+
+#login-container input {
+  padding: 12px;
+  border: 1px solid #555;
+  border-radius: 8px;
+  background-color: #222;
+  color: #fff;
+  font-size: 1.2rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+#login-container input::placeholder {
+  color: #aaa;
+}
+
+#login-container input:focus {
+  border-color: #ffd700;
+  box-shadow: 0 0 10px #ffd700;
+  outline: none;
+}
+
+#login-container button {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: #ffd700;
+  color: #000;
+  font-weight: bold;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+#login-container button:hover {
+  background-color: #ffea00;
+  transform: scale(1.05);
+}
+
+#login-error {
+  color: #ff4d4d;
+  font-weight: bold;
+  font-size: 1rem;
+  text-shadow: 1px 1px 2px #000;
+}
+
+
+/* =================== PANEL DE ADMINISTRACIÓN =================== */
+#admin-panel {
+  display: none; /* oculto hasta login */
+  flex-direction: column;
+  margin-top: 150px; /* espacio para el header */
+  flex: 1;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* =================== TABS =================== */
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tab-btn {
+  padding: 10px 20px;
+  background-color: #222;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 5px 5px 0 0;
+  transition: background-color 0.2s;
+}
+
+.tab-btn:hover {
+  background-color: #333;
+}
+
+.tab-btn.active {
+  background-color: #fff;
+  color: #000;
+}
+
+/* =================== CONTENIDO DE TABS =================== */
+.tab-content {
+  flex: 1;
+  background-color: #111;
+  padding: 20px;
+  border-radius: 0 5px 5px 5px;
+  overflow-y: auto; /* scroll si contenido es largo */
+}
+
+.tab-section {
+  display: none; /* oculto por defecto */
+}
+
+.tab-section.active {
+  display: block; /* visible solo la sección activa */
+}
+
+
+/* =================== SECCIÓN PRODUCTOS =================== */
+
+/* Contenedor del header centrado */
+.section-header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+/* Formulario “Agregar producto” en línea */
+.add-product-form {
+  display: flex;
+  flex-wrap: wrap;       /* permite que los elementos se ajusten si no caben */
+  gap: 10px;             /* espacio entre inputs */
+  margin-bottom: 30px;
+  align-items: center;   /* alinea verticalmente inputs, select y botón */
+}
+
+.add-product-form input,
+.add-product-form select,
+.add-product-form button,
+.add-product-form label {
+  flex: 1;               /* ocupan espacio proporcional */
+  min-width: 120px;      /* evita que se compriman demasiado */
+}
+
+.add-product-form button {
+  flex: 0 0 auto;        /* mantiene tamaño natural */
+}
+
+.add-product-form select {
+  padding: 12px;
+  border: 1px solid #555;
+  border-radius: 8px;
+  background-color: #222;
+  color: #fff;
+  font-size: 1.2rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.add-product-form select:focus {
+  border-color: #ffd700;
+  box-shadow: 0 0 10px #ffd700;
+  outline: none;
+}
+
+/* =================== FORMULARIO EN LÍNEA =================== */
+.add-product-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 30px;
+  align-items: center;
+}
+
+.add-product-form input,
+.add-product-form select,
+.add-product-form button,
+.add-product-form label {
+  flex: 1;
+  min-width: 120px;
+}
+
+.add-product-form button {
+  flex: 0 0 auto;
+}
+
+/* =================== LISTA DE PRODUCTOS UNIFORME =================== */
+.product-list-section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 15px;
+}
+
+.product-list-section h2 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.product-list-section .product-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  background-color: #222;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.product-list-section .product-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.product-list-section .product-item .product-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-list-section .product-item .product-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.product-list-section .product-item .product-actions button {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+/* =================== SECCIÓN CONTENIDO PÚBLICO =================== */
+
+/* Contenedor principal */
+.contenido-publico-section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 15px;
+}
+
+/* Título centrado */
+.contenido-publico-section h2 {
+  text-align: center;
+  margin-bottom: 10px;
+  color: #ffd700;
+  text-shadow: 1px 1px 3px #000;
+}
+
+/* Formulario agregar/editar contenido */
+.add-contenido-publico-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 30px;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-contenido-publico-form input,
+.add-contenido-publico-form select,
+.add-contenido-publico-form button,
+.add-contenido-publico-form label {
+  flex: 1;
+  min-width: 150px;
+}
+
+.add-contenido-publico-form select,
+.add-contenido-publico-form input[type="file"] {
+  padding: 12px;
+  border: 1px solid #555;
+  border-radius: 8px;
+  background-color: #222;
+  color: #fff;
+  font-size: 1.2rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.add-contenido-publico-form select:focus,
+.add-contenido-publico-form input[type="file"]:focus {
+  border-color: #ffd700;
+  box-shadow: 0 0 10px #ffd700;
+  outline: none;
+}
+
+.add-contenido-publico-form button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: #ffd700;
+  color: #000;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.add-contenido-publico-form button:hover {
+  background-color: #ffea00;
+  transform: scale(1.05);
+}
+
+/* Mensaje de estado */
+#cp-msg {
+  text-align: center;
+  font-weight: bold;
+  color: #00ffcc;
+  margin-bottom: 10px;
+}
+
+/* Lista de contenido público */
+#lista-contenido-publico {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 15px;
+}
+
+/* Cada item */
+#lista-contenido-publico .cp-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  background-color: #222;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+#lista-contenido-publico .cp-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border-radius: 5px;
+}
+
+#lista-contenido-publico .cp-item .cp-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  color: #fff;
+}
+
+#lista-contenido-publico .cp-item .cp-actions {
+  display: flex;
+  gap: 5px;
+}
+
+#lista-contenido-publico .cp-item .cp-actions button {
+  padding: 5px 10px;
+  cursor: pointer;
+  background-color: #444;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+#lista-contenido-publico .cp-item .cp-actions button:hover {
+  background-color: #666;
+}
+
+/* =========================
+   SUBPESTAÑAS DE PRODUCTOS
+========================= */
+.sub-tabs {
+  margin-top: 15px;
+  display: flex;
+  gap: 6px;
+}
+
+.sub-tab-btn {
+  padding: 6px 10px;
+  background-color: #2b2b2b;
+  color: white;
+  border: 1px solid #444;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.sub-tab-btn.active {
+  background-color: #555;
+  border-color: #777;
+}
+
+.sub-tab-section {
+  display: none;
+  margin-top: 10px;
+}
+
+.sub-tab-section.active {
+  display: block;
+}
+
+/* TCG buttons dentro de Cartas */
+.tcg-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.tcg-btn {
+  padding: 4px 8px;
+  border: 1px solid #444;
+  border-radius: 4px;
+  background-color: #333;
+  color: white;
+  cursor: pointer;
+}
+
+.tcg-btn.active {
+  background-color: #666;
+  border-color: #999;
+}
+
+/* Forzar mismo estilo horizontal en las cartas (Magic, Pokémon, One Piece) */
+#cartas-tab .product-item,
+#magic-tab .product-item,
+#pokemon-tab .product-item,
+#onepiece-tab .product-item {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-direction: row !important;
+}
+
+#cartas-tab .product-item img,
+#magic-tab .product-item img,
+#pokemon-tab .product-item img,
+#onepiece-tab .product-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  margin-right: 15px;
+}
+
+#cartas-tab .product-item .product-info,
+#magic-tab .product-item .product-info,
+#pokemon-tab .product-item .product-info,
+#onepiece-tab .product-item .product-info {
+  flex: 1;
+  text-align: left;
+}
+
+#cartas-tab .product-item .product-actions,
+#magic-tab .product-item .product-actions,
+#pokemon-tab .product-item .product-actions,
+#onepiece-tab .product-item .product-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.tcg-list { display: none; }
+.tcg-list.active { display: block; }

@@ -1,0 +1,560 @@
+/* ========== PRODUCTOS ========== */
+.section-header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.add-product-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 30px;
+  align-items: center;
+}
+
+.add-product-form input,
+.add-product-form select,
+.add-product-form button,
+.add-product-form label {
+  flex: 1;
+  min-width: 120px;
+}
+
+.add-product-form button {
+  flex: 0 0 auto;
+}
+
+.add-product-form select {
+  padding: 12px;
+  border: 1px solid #555;
+  border-radius: 8px;
+  background-color: #222;
+  color: #fff;
+  font-size: 1.2rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.add-product-form select:focus {
+  border-color: #ffd700;
+  box-shadow: 0 0 10px #ffd700;
+  outline: none;
+}
+
+.product-list-section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 15px;
+}
+
+.product-list-section h2 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.product-list-section .product-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  background-color: #222;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.product-list-section .product-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.product-list-section .product-item .product-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-list-section .product-item .product-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.product-list-section .product-item .product-actions button {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+/* ================= CONTENIDO PÚBLICO ESTILO PRODUCTOS ================= */
+.contenido-publico-section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 15px;
+}
+
+.contenido-publico-section h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #ffd700;
+  text-shadow: 1px 1px 3px #000;
+}
+
+.add-contenido-publico-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 30px;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-contenido-publico-form input,
+.add-contenido-publico-form select,
+.add-contenido-publico-form button,
+.add-contenido-publico-form label {
+  flex: 1;
+  min-width: 120px;
+}
+
+.add-contenido-publico-form select,
+.add-contenido-publico-form input[type="file"] {
+  padding: 12px;
+  border: 1px solid #555;
+  border-radius: 8px;
+  background-color: #222;
+  color: #fff;
+  font-size: 1.2rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.add-contenido-publico-form select:focus,
+.add-contenido-publico-form input[type="file"]:focus {
+  border-color: #ffd700;
+  box-shadow: 0 0 10px #ffd700;
+  outline: none;
+}
+
+.add-contenido-publico-form button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: #ffd700;
+  color: #000;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.add-contenido-publico-form button:hover {
+  background-color: #ffea00;
+  transform: scale(1.05);
+}
+
+#contenido-msg {
+  text-align: center;
+  font-weight: bold;
+  color: #00ffcc;
+  margin-bottom: 10px;
+}
+
+/* ================= LISTAS POR SUBPESTAÑAS ================= */
+#lista-carrousel,
+#lista-comunidad,
+#lista-assets {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+#lista-carrousel .product-item,
+#lista-comunidad .product-item,
+#lista-assets .product-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  background-color: #222;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+#lista-carrousel .product-item img,
+#lista-comunidad .product-item img,
+#lista-assets .product-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border-radius: 5px;
+}
+
+#lista-carrousel .product-item .product-info,
+#lista-comunidad .product-item .product-info,
+#lista-assets .product-item .product-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  color: #fff;
+}
+
+#lista-carrousel .product-item .product-actions,
+#lista-comunidad .product-item .product-actions,
+#lista-assets .product-item .product-actions {
+  display: flex;
+  gap: 5px;
+}
+
+#lista-carrousel .product-item .product-actions button,
+#lista-comunidad .product-item .product-actions button,
+#lista-assets .product-item .product-actions button {
+  padding: 5px 10px;
+  cursor: pointer;
+  background-color: #444;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+#lista-carrousel .product-item .product-actions button:hover,
+#lista-comunidad .product-item .product-actions button:hover,
+#lista-assets .product-item .product-actions button:hover {
+  background-color: #666;
+}
+
+/* ================= SUBPESTAÑAS ================= */
+.subtabs {
+  margin-top: 15px;
+  display: flex;
+  gap: 6px;
+}
+
+.subtab-btn {
+  padding: 6px 10px;
+  background-color: #2b2b2b;
+  color: white;
+  border: 1px solid #444;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.subtab-btn.active {
+  background-color: #555;
+  border-color: #777;
+}
+
+.subtab-section {
+  display: none;
+  margin-top: 10px;
+}
+
+.subtab-section.active {
+  display: block;
+}
+
+
+/* ========== EVENTOS ========== */
+/* mantengo selectores específicos para que no haya cambios visuales */
+#eventos-tab {
+  flex-direction: column;
+  gap: 20px;
+}
+
+#eventos-tab h2 {
+  text-align: center;
+  color: #ffffff;
+  text-shadow: 1px 1px 3px #000;
+}
+
+/* preservo el conjunto exacto de selectores para inputs y textarea */
+#eventos-tab input[type="text"],
+#eventos-tab input[type="date"],
+#eventos-tab input[type="file"],
+#eventos-tab textarea {
+  padding: 12px;
+  border: 1px solid #555;
+  border-radius: 8px;
+  background-color: #222;
+  color: #fff;
+  font-size: 1rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#eventos-tab input:focus,
+#eventos-tab textarea:focus,
+#eventos-tab select:focus {
+  border-color: #ffffff;
+  box-shadow: 0 0 10px #ffffff;
+  outline: none;
+}
+
+#eventos-tab button {
+  align-self: center;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #000;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+#eventos-tab button:hover {
+  background-color: #ffffff;
+  transform: scale(1.05);
+}
+
+/* ========== EVENTOS EXISTENTES ========== */
+#lista-eventos {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 15px;
+}
+
+#lista-eventos h2 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+#lista-eventos .evento-admin {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  background-color: #222;
+  padding: 12px 16px;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+#lista-eventos .evento-admin img {
+  width: 320px;
+  height: 180px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border-radius: 5px;
+}
+
+#lista-eventos .evento-admin strong {
+  flex: 1;
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+#lista-eventos .evento-admin span {
+  color: #ccc;
+  font-size: 0.9rem;
+}
+
+#lista-eventos .evento-admin button {
+  padding: 6px 12px;
+  cursor: pointer;
+  background-color: #444;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+#lista-eventos .evento-admin button:hover {
+  background-color: #666;
+  transform: scale(1.05);
+}
+
+/* ========== ROLES ========== */
+#roles-tab {
+  flex-direction: column;
+  gap: 20px;
+}
+
+#roles-tab h2,
+#roles-tab h3 {
+  text-align: center;
+  color: #ffd700;
+  text-shadow: 1px 1px 3px #000;
+}
+
+#roles-tab input[type="email"] {
+  padding: 12px;
+  border: 1px solid #555;
+  border-radius: 8px;
+  background-color: #222;
+  color: #fff;
+  font-size: 1rem;
+  width: 100%;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+#roles-tab input[type="email"]:focus {
+  border-color: #ffd700;
+  box-shadow: 0 0 10px #ffd700;
+  outline: none;
+}
+
+#roles-tab button {
+  align-self: center;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: #ffd700;
+  color: #000;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+#roles-tab button:hover {
+  background-color: #ffea00;
+  transform: scale(1.05);
+}
+
+#lista-admins {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+#lista-admins .admin-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #222;
+  padding: 10px;
+  border-radius: 5px;
+  color: #fff;
+}
+
+#lista-admins .admin-item button {
+  background-color: #444;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#lista-admins .admin-item button:hover {
+  background-color: #666;
+}
+
+/* ========== SUBPESTAÑAS / TCG ========== */
+.sub-tabs {
+  margin-top: 15px;
+  display: flex;
+  gap: 6px;
+}
+
+.sub-tab-btn {
+  padding: 6px 10px;
+  background-color: #2b2b2b;
+  color: white;
+  border: 1px solid #444;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.sub-tab-btn.active {
+  background-color: #555;
+  border-color: #777;
+}
+
+.sub-tab-section {
+  display: none;
+  margin-top: 10px;
+}
+
+.sub-tab-section.active {
+  display: block;
+}
+
+/* TCG buttons dentro de Cartas */
+.tcg-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.tcg-btn {
+  padding: 4px 8px;
+  border: 1px solid #444;
+  border-radius: 4px;
+  background-color: #333;
+  color: white;
+  cursor: pointer;
+}
+
+.tcg-btn.active {
+  background-color: #666;
+  border-color: #999;
+}
+
+/* Aseguro que las listas TCG funcionen como antes */
+.tcg-list { display: none; }
+.tcg-list.active { display: block; }
+
+/* Regla conservadora para product-item en sub-tabs de TCG */
+#cartas-tab .product-item,
+#magic-tab .product-item,
+#pokemon-tab .product-item,
+#onepiece-tab .product-item {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-direction: row !important;
+}
+
+#cartas-tab .product-item img,
+#magic-tab .product-item img,
+#pokemon-tab .product-item img,
+#onepiece-tab .product-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  margin-right: 15px;
+}
+
+#cartas-tab .product-item .product-info,
+#magic-tab .product-item .product-info,
+#pokemon-tab .product-item .product-info,
+#onepiece-tab .product-item .product-info {
+  flex: 1;
+  text-align: left;
+}
+
+#cartas-tab .product-item .product-actions,
+#magic-tab .product-item .product-actions,
+#pokemon-tab .product-item .product-actions,
+#onepiece-tab .product-item .product-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ========== BASE PARA TABS ========== */
+.tab-section {
+  display: none;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  border: 2px solid #333;
+  border-radius: 10px;
+  background-color: #111;
+  box-shadow: 0 0 10px rgba(0,0,0,0.4);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.tab-section.active {
+  display: flex;
+}

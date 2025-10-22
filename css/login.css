@@ -1,0 +1,72 @@
+/* =======================================
+   Estilos del contenedor de login
+======================================= */
+
+#login-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  background-color: #1c1c1c;
+  padding: 50px 60px;
+  border-radius: 15px;
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
+  min-width: 350px;
+  margin-top: 150px;
+  border: 2px solid #444;
+  transition: transform 0.3s;
+}
+
+#login-container:hover {
+  transform: translateY(-5px);
+}
+
+#login-container h2 {
+  margin-bottom: 20px;
+  font-size: 2rem;
+  color: #ffd700;
+  text-shadow: 1px 1px 3px #000;
+}
+
+#login-container input {
+  padding: 12px;
+  border: 1px solid #555;
+  border-radius: 8px;
+  background-color: #222;
+  color: #fff;
+  font-size: 1.2rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+#login-container input::placeholder {
+  color: #aaa;
+}
+
+#login-container input:focus {
+  border-color: #ffd700;
+  box-shadow: 0 0 10px #ffd700;
+  outline: none;
+}
+
+#login-container button {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: #ffd700;
+  color: #000;
+  font-weight: bold;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+#login-container button:hover {
+  background-color: #ffea00;
+  transform: scale(1.05);
+}
+
+#login-error {
+  color: #ff4d4d;
+  font-weight: bold;
+  font-size: 1rem;
+  text-shadow: 1px 1px 2px #000;
+}
