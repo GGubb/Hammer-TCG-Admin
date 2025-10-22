@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel Admin - Tienda</title>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <!-- Título principal -->
+  <header>
+    <img src="./assets/logo.png" alt="Logo" id="login-logo">
+    <img src="./assets/Hammer_TCG_logo.png" alt="Hammer TCG" id="inicio-logo">
+    <h1>Administración Hammer TCG Store</h1>
+  </header>
+
+  <!-- Login -->
+  <div id="login-container">
+    <h2>Iniciar sesión</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Contraseña">
+    <button id="login-btn">Ingresar</button>
+    <p id="login-error" style="color:red;"></p>
+  </div>
+
+  <!-- Panel de administración -->
+  <div id="admin-panel" style="display:none;">
+    <!-- Contenedor de tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="productos-tab">Productos</button>
+      <button class="tab-btn" data-tab="eventos-tab">Eventos</button>
+      <button class="tab-btn" data-tab="contenido-publico-tab">Contenido Público</button>
+      <button class="tab-btn" data-tab="roles-tab">Roles</button>
+    </div>
+
+    <!-- PRODUCTOS -->
+    <section id="productos-tab" class="tab-section active">
+      <div class="tab-content">
+        <!-- Título centrado -->
+        <div class="section-header">
+          <h2>Agregar / Editar Producto</h2>
+        </div>
+
+        <!-- Formulario en línea -->
+        <div class="add-product-form">
+          <input type="text" id="nombre" placeholder="Nombre" required>
+          <input type="text" id="descripcion" placeholder="Descripción" required>
+          <input type="number" id="precio" placeholder="Precio" required>
+          <input type="number" id="cantidad" placeholder="Cantidad" min="0" value="0" required>
+          <input type="file" id="imagen" accept="image/*">
+
+          <!-- Tipo de producto -->
+          <select id="tipo_producto" required>
+            <option value="">Selecciona tipo de producto</option>
+            <option value="Carta">Carta</option>
+            <option value="Carpeta">Carpeta</option>
+            <option value="Protector">Protector</option>
+            <option value="Caja para deck">Caja para deck</option>
+            <option value="Otro">Otro</option>
+          </select>
+
+          <!-- TCG solo obligatorio si tipo es Carta -->
+          <select id="tcg">
+            <option value="">Selecciona TCG (solo cartas)</option>
+            <option value="Magic">Magic</option>
+            <option value="Pokemon">Pokemon</option>
+            <option value="One Piece">One Piece</option>
+          </select>
+
+          <label><input type="checkbox" id="oferta"> Oferta</label>
+          <label><input type="checkbox" id="disponible" checked> Disponible</label>
+          <label><input type="checkbox" id="destacado"> Destacado</label>
+          <label><input type="checkbox" id="preventa"> Preventa</label>
+
+
+          <button id="guardar-btn">Guardar Producto</button>
+          <p id="save-msg" style="color:green;"></p>
+        </div>
+
+        <!-- LISTA DE PRODUCTOS CON SUBPESTAÑAS -->
+        <div class="product-list-section">
+          <h2>Productos existentes</h2>
+
+          <!-- Subpestañas de tipos -->
+          <div class="sub-tabs">
+            <button class="sub-tab-btn active" data-subtab="cartas-tab">Cartas</button>
+            <button class="sub-tab-btn" data-subtab="carpetas-tab">Carpetas</button>
+            <button class="sub-tab-btn" data-subtab="protectores-tab">Protectores</button>
+            <button class="sub-tab-btn" data-subtab="cajas-tab">Cajas para deck</button>
+            <button class="sub-tab-btn" data-subtab="otros-tab">Otros</button>
+          </div>
+
+          <!-- Contenido de las subpestañas -->
+          <div class="sub-tab-content">
+            <!-- CARTAS -->
+            <div id="cartas-tab" class="sub-tab-section active">
+              <div class="tcg-tabs">
+                <button class="tcg-btn active" data-tcg="Magic">Magic</button>
+                <button class="tcg-btn" data-tcg="Pokemon">Pokémon</button>
+                <button class="tcg-btn" data-tcg="One Piece">One Piece</button>
+              </div>
+
+              <!-- Contenedores separados por TCG -->
+              <div class="tcg-listas">
+                <div class="tcg-list active" id="lista-cartas-magic"></div>
+                <div class="tcg-list" id="lista-cartas-pokemon"></div>
+                <div class="tcg-list" id="lista-cartas-onepiece"></div>
+              </div>
+            </div>
+
+            <!-- CARPETAS -->
+            <div id="carpetas-tab" class="sub-tab-section">
+              <div id="lista-carpetas"></div>
+            </div>
+
+            <!-- PROTECTORES -->
+            <div id="protectores-tab" class="sub-tab-section">
+              <div id="lista-protectores"></div>
+            </div>
+
+            <!-- CAJAS PARA DECK -->
+            <div id="cajas-tab" class="sub-tab-section">
+              <div id="lista-cajas"></div>
+            </div>
+
+            <!-- OTROS -->
+            <div id="otros-tab" class="sub-tab-section">
+              <div id="lista-otros"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EVENTOS -->
+    <section id="eventos-tab" class="tab-section">
+      <div class="tab-content">
+        <h2>Agregar / Editar Evento</h2>
+        <input type="text" id="evento-titulo" placeholder="Título del evento" required>
+        <textarea id="evento-descripcion" placeholder="Descripción del evento"></textarea>
+        <input type="date" id="evento-fecha" required>
+        <input type="file" id="evento-imagen" accept="image/*">
+        <button id="guardar-evento-btn">Guardar Evento</button>
+        <p id="evento-msg" style="color:green;"></p>
+
+        <h2>Eventos existentes</h2>
+        <div id="lista-eventos"></div>
+      </div>
+    </section>
+
+    <!-- ================= CONTENIDO PÚBLICO ================= -->
+    <section id="contenido-publico-tab" class="tab-section">
+      <div class="section-header">
+        <h2>Agregar / Editar Contenido Público</h2>
+      </div>
+
+      <form class="add-contenido-publico-form" id="form-contenido-publico" onsubmit="return false;">
+        <label for="tipo-contenido">Tipo de contenido:</label>
+        <select id="tipo-contenido">
+          <option value="">Selecciona un tipo</option>
+          <option value="carrousel">Carrousel</option>
+          <option value="comunidad">Comunidad</option>
+          <option value="logo_arriba">Logo Header</option>
+          <option value="logo_abajo">Logo Info</option>
+          <option value="logo_login">Logo login</option>
+          <option value="logo_admin">Logo Admin</option>
+          <option value="logo_gmail">Logo Gmail</option>
+          <option value="logo_ig">Logo Instagram</option>
+          <option value="logo_face">Logo Facebook</option>
+        </select>
+
+        <label for="contenido-tcg">TCG:</label>
+        <select id="contenido-tcg">
+          <option value="">Ninguno</option>
+          <option value="Magic">Magic</option>
+          <option value="Pokemon">Pokemon</option>
+          <option value="One Piece">One Piece</option>
+        </select>
+
+        <label for="contenido-imagen">Imagen:</label>
+        <input type="file" id="contenido-imagen" accept="image/*">
+
+        <button id="guardar-contenido-btn">Guardar</button>
+      </form>
+
+      <div id="contenido-msg"></div>
+
+      <!-- ================= SUBPestañas dentro de Contenido Público ================= -->
+      <div class="subtabs">
+        <button class="subtab-btn active" data-subtab="carrousel">Carrousel</button>
+        <button class="subtab-btn" data-subtab="comunidad">Comunidad</button>
+        <button class="subtab-btn" data-subtab="assets">Assets</button>
+      </div>
+
+      <!-- Secciones para cada subtipo -->
+      <div id="subtab-carrousel" class="subtab-section active">
+        <div id="lista-carrousel" class="contenido-lista"></div>
+      </div>
+
+      <div id="subtab-comunidad" class="subtab-section">
+        <div id="lista-comunidad" class="contenido-lista"></div>
+      </div>
+
+      <div id="subtab-assets" class="subtab-section">
+        <div id="lista-assets" class="contenido-lista"></div>
+      </div>
+    </section>
+
+    <!-- ROLES -->
+    <section id="roles-tab" class="tab-section">
+      <div class="tab-content">
+        <h2>Gestión de Roles (solo admin)</h2>
+        <input type="email" id="nuevo-admin-email" placeholder="Email del nuevo admin (o ingresa UUID en 'profiles')">
+        <button id="agregar-admin-btn">Agregar como Admin</button>
+        <p id="roles-msg" style="color:green;"></p>
+
+        <h3>Admins actuales</h3>
+        <div id="lista-admins"></div>
+      </div>
+    </section>
+
+  
+
+  <script type="module" src="./js/admin.js"></script>
+  <script>
+    // Cambio de pestañas 
+    const tabButtons = document.querySelectorAll(".tab-btn");
+    const tabSections = document.querySelectorAll(".tab-section");
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        tabButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        const target = btn.dataset.tab;
+        tabSections.forEach(sec => {
+          sec.classList.toggle("active", sec.id === target);
+        });
+      });
+    });
+  </script>
+
+  <script>
+  // Subpestañas de tipos
+  const subTabButtons = document.querySelectorAll(".sub-tab-btn");
+  const subTabSections = document.querySelectorAll(".sub-tab-section");
+
+  subTabButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      subTabButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      const target = btn.dataset.subtab;
+      subTabSections.forEach(sec => {
+        sec.classList.toggle("active", sec.id === target);
+      });
+    });
+  });
+
+  // Subpestañas TCG dentro de cartas
+  const tcgButtons = document.querySelectorAll(".tcg-btn");
+  tcgButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      tcgButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const tcg = btn.dataset.tcg;
+
+      document.querySelectorAll("#lista-cartas .product-item").forEach(item => {
+        const tcgText = item.querySelector("span").textContent;
+        item.style.display = tcgText.includes(tcg) ? "block" : "none";
+      });
+    });
+  });
+  </script>
+
+</body>
+</html>
