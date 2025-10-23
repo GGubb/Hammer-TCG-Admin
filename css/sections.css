@@ -59,8 +59,10 @@
   gap: 15px;
   width: 100%;
   background-color: #222;
-  padding: 10px;
-  border-radius: 5px;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  margin-bottom: 20px; /* ← agrega espacio real entre productos */
 }
 
 .product-list-section .product-item img {
@@ -71,10 +73,17 @@
 }
 
 .product-list-section .product-item .product-info {
-  flex: 1;
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* nombre arriba, datos abajo */
+  gap: 5px;
 }
+
+.product-list-section .product-item .product-info .product-data {
+  display: flex;       /* alinea todos los spans horizontalmente */
+  gap: 15px;           /* espacio entre cada dato */
+  flex-wrap: wrap;     /* si no caben, saltan a otra línea */
+}
+
 
 .product-list-section .product-item .product-actions {
   display: flex;
@@ -86,7 +95,49 @@
   cursor: pointer;
 }
 
-/* ================= CONTENIDO PÚBLICO ESTILO PRODUCTOS ================= */
+.product-list-section .product-item {
+  border: 1px solid #333; /* línea sutil entre productos */
+}
+
+/* ==== Nombre y descripción en columna ==== */
+.add-product-texts {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.add-product-texts input[type="text"],
+.add-product-texts textarea {
+  padding: 12px;
+  border: 1px solid #555;
+  border-radius: 8px;
+  background-color: #222;
+  color: #fff;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Al enfocar, solo cambia el borde, sin brillo */
+.add-product-texts input[type="text"]:focus,
+.add-product-texts textarea:focus {
+  border-color: #888;
+  outline: none;
+}
+
+/* Área de descripción más cómoda para escribir en varias líneas */
+.add-product-texts textarea {
+  resize: vertical;
+  min-height: 100px;
+  max-height: 300px;
+  line-height: 1.5;
+  white-space: pre-wrap; /* mantiene los saltos de línea */
+}
+
+
+/* ================= CONTENIDO PÚBLICO ================ */
 .contenido-publico-section {
   display: flex;
   flex-direction: column;
@@ -140,7 +191,7 @@
   padding: 10px 20px;
   border: none;
   border-radius: 8px;
-  background-color: #ffd700;
+  background-color: #ffffff;
   color: #000;
   font-weight: bold;
   font-size: 1rem;
@@ -149,7 +200,7 @@
 }
 
 .add-contenido-publico-form button:hover {
-  background-color: #ffea00;
+  background-color: #ffffff;
   transform: scale(1.05);
 }
 
@@ -257,7 +308,6 @@
 
 
 /* ========== EVENTOS ========== */
-/* mantengo selectores específicos para que no haya cambios visuales */
 #eventos-tab {
   flex-direction: column;
   gap: 20px;
@@ -283,13 +333,14 @@
   transition: border-color 0.3s, box-shadow 0.3s;
   width: 100%;
   box-sizing: border-box;
+  margin-bottom: 10px;
 }
 
 #eventos-tab input:focus,
 #eventos-tab textarea:focus,
 #eventos-tab select:focus {
-  border-color: #ffffff;
-  box-shadow: 0 0 10px #ffffff;
+  border-color: none;
+  box-shadow: none;
   outline: none;
 }
 
@@ -304,6 +355,8 @@
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.2s, transform 0.2s;
+  margin-top: 10px;
+  margin-bottom: 30px;
 }
 
 #eventos-tab button:hover {
@@ -317,6 +370,7 @@
   flex-direction: column;
   width: 100%;
   gap: 15px;
+  margin-top: 30px;
 }
 
 #lista-eventos h2 {
@@ -336,20 +390,27 @@
 }
 
 #lista-eventos .evento-admin img {
-  width: 320px;
-  height: 180px;
+  width: 160px;
+  height: 160px;
   object-fit: cover;
-  flex-shrink: 0;
   border-radius: 5px;
+  flex-shrink: 0;
 }
 
-#lista-eventos .evento-admin strong {
-  flex: 1;
+#lista-eventos .evento-admin .evento-texto {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  flex: 1; /* ocupa el espacio entre la imagen y los botones */
+}
+
+#lista-eventos .evento-admin .evento-texto strong {
   font-size: 1.1rem;
   color: #fff;
 }
 
-#lista-eventos .evento-admin span {
+#lista-eventos .evento-admin .evento-texto span {
   color: #ccc;
   font-size: 0.9rem;
 }
@@ -369,6 +430,7 @@
   background-color: #666;
   transform: scale(1.05);
 }
+
 
 /* ========== ROLES ========== */
 #roles-tab {
@@ -395,8 +457,8 @@
 }
 
 #roles-tab input[type="email"]:focus {
-  border-color: #ffd700;
-  box-shadow: 0 0 10px #ffd700;
+  border-color: none;
+  box-shadow: none;
   outline: none;
 }
 

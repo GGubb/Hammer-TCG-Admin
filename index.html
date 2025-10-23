@@ -4,6 +4,20 @@
   <meta charset="UTF-8">
   <title>Panel Admin - Tienda</title>
   <link rel="stylesheet" href="css/main.css">
+  <style>
+    /* ====================== Ajuste productos existentes ====================== */
+    .product-list-section .product-item .product-info {
+      display: flex;
+      flex-direction: column; /* nombre arriba, datos abajo */
+      gap: 5px;
+    }
+
+    .product-list-section .product-item .product-info .product-data {
+      display: flex;       /* alinea todos los spans horizontalmente */
+      gap: 15px;           /* espacio entre cada dato */
+      flex-wrap: wrap;     /* si no caben, saltan a otra línea */
+    }
+  </style>
 </head>
 <body>
   <!-- Título principal -->
@@ -42,8 +56,14 @@
 
         <!-- Formulario en línea -->
         <div class="add-product-form">
-          <input type="text" id="nombre" placeholder="Nombre" required>
-          <input type="text" id="descripcion" placeholder="Descripción" required>
+
+          <!-- Nombre y descripción alineados verticalmente -->
+          <div class="add-product-texts">
+            <input type="text" id="nombre" placeholder="Nombre" required>
+            <textarea id="descripcion" placeholder="Descripción" required></textarea>
+          </div>
+
+          <!-- Resto del formulario sigue igual en línea -->
           <input type="number" id="precio" placeholder="Precio" required>
           <input type="number" id="cantidad" placeholder="Cantidad" min="0" value="0" required>
           <input type="file" id="imagen" accept="image/*">
@@ -67,10 +87,10 @@
           </select>
 
           <label><input type="checkbox" id="oferta"> Oferta</label>
+          <input type="number" id="cantidad_oferta" min="0" max="100" />
           <label><input type="checkbox" id="disponible" checked> Disponible</label>
           <label><input type="checkbox" id="destacado"> Destacado</label>
           <label><input type="checkbox" id="preventa"> Preventa</label>
-
 
           <button id="guardar-btn">Guardar Producto</button>
           <p id="save-msg" style="color:green;"></p>
@@ -218,7 +238,7 @@
       </div>
     </section>
 
-  
+  </div>
 
   <script type="module" src="./js/admin.js"></script>
   <script>

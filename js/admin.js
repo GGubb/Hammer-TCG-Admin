@@ -57,22 +57,14 @@ loginBtn.addEventListener("click", async () => {
     return;
   }
 
-  // =========================
   // Mostrar pantalla de inicio
-  // =========================
   loginContainer.style.display = "none";
   adminPanel.style.display = "block";
-
   loginLogo.style.display = "none";
-  inicioLogo.style.display = "block"
-
-  // Ocultar el h1 de login
+  inicioLogo.style.display = "block";
   loginH1.style.display = "none";
 
-  // Mostrar el logo de inicio
-  inicioLogo.style.display = "block";
-
-  // Cargar productos, eventos y admins
+  // Cargar datos
   cargarProductosAdmin();
   cargarEventosAdmin();
   cargarAdmins();
@@ -89,12 +81,19 @@ const precioInput = document.getElementById("precio");
 const imagenInput = document.getElementById("imagen");
 const tcgInput = document.getElementById("tcg");
 const ofertaInput = document.getElementById("oferta");
+const cantidadOfertaInput = document.getElementById("cantidad_oferta");
 const disponibleInput = document.getElementById("disponible");
 const destacadoInput = document.getElementById("destacado");
 const preventaInput = document.getElementById("preventa");
 const cantidadInput = document.getElementById("cantidad");
 const guardarBtn = document.getElementById("guardar-btn");
 const saveMsg = document.getElementById("save-msg");
+
+// Habilitar/deshabilitar según el checkbox de oferta
+ofertaInput.addEventListener("change", () => {
+  cantidadOfertaInput.disabled = !ofertaInput.checked;
+  if (!ofertaInput.checked) cantidadOfertaInput.value = 0;
+});
 
 let editId = null;
 
@@ -118,7 +117,6 @@ async function cargarProductosAdmin() {
   document.getElementById("lista-cajas").innerHTML = "";
   document.getElementById("lista-otros").innerHTML = "";
 
-  // Filtrar por tipo y TCG
   productos.forEach((p) => {
     let targetDiv;
 
@@ -132,13 +130,26 @@ async function cargarProductosAdmin() {
     else if (p.tipo_producto === "Caja para deck") targetDiv = document.getElementById("lista-cajas");
     else targetDiv = document.getElementById("lista-otros");
 
+    // Calcular precio en oferta si corresponde
+    const precioOferta = "";
+
+    // Crear badges
+    const ofertaBadge = ""; 
+    const stockBadge = "";
+
     const html = `
-      <div class="product-item" data-id="${p.id}">
+      <div class="product-item" data-id="${p.id}" style="position:relative;">
+        ${ofertaBadge}
+        ${stockBadge}
         <img src="${p.imagen}" alt="${p.nombre}">
         <div class="product-info">
           <strong>${p.nombre}</strong>
-          <span>$${p.precio} - ${p.TCG || ""}</span>
+          <span>Precio: $${p.precio}</span>
+          <span>Oferta: ${p.oferta && p.cantidad_oferta > 0 ? `Sí (${p.cantidad_oferta}%)` : "No"}</span>
+          <span>TCG: ${p.TCG || "-"}</span>
           <span>Cantidad: ${p.cantidad}</span>
+          <span>Preventa: ${p.preventa ? "Sí" : "No"}</span>
+          <span>Disponible: ${p.disponible ? "Sí" : "No"}</span>
         </div>
         <div class="product-actions">
           <button class="editar-btn">Editar</button>
@@ -149,10 +160,9 @@ async function cargarProductosAdmin() {
     targetDiv.innerHTML += html;
   });
 
-  // Eventos eliminar/editar
   document.querySelectorAll(".eliminar-btn").forEach((btn) => {
     btn.addEventListener("click", async () => {
-      const id = btn.parentElement.parentElement.dataset.id;
+      const id = btn.closest(".product-item").dataset.id;
       const producto = (await supabase.from("productos").select("imagen").eq("id", id).single()).data;
 
       if (confirm("¿Eliminar este producto?")) {
@@ -166,7 +176,7 @@ async function cargarProductosAdmin() {
 
   document.querySelectorAll(".editar-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const id = btn.parentElement.parentElement.dataset.id;
+      const id = btn.closest(".product-item").dataset.id;
       const producto = productos.find((p) => p.id == id);
       if (!producto) return;
 
@@ -176,15 +186,17 @@ async function cargarProductosAdmin() {
       tcgInput.value = producto.TCG;
       tipoProductoInput.value = producto.tipo_producto;
       ofertaInput.checked = producto.oferta;
+      cantidadOfertaInput.value = producto.cantidad_oferta || 0;
+      cantidadOfertaInput.disabled = !producto.oferta;
       disponibleInput.checked = producto.disponible;
-      destacadoInput.checked = producto.destacado; 
+      destacadoInput.checked = producto.destacado;
+      preventaInput.checked = producto.preventa;
       cantidadInput.value = producto.cantidad;
       editId = producto.id;
       saveMsg.textContent = "Editando producto...";
     });
   });
 }
-
 guardarBtn.addEventListener("click", async () => {
   const nombre = nombreInput.value.trim();
   const descripcion = descripcionInput.value.trim();
@@ -192,13 +204,13 @@ guardarBtn.addEventListener("click", async () => {
   const tcg = tcgInput.value;
   const tipo_producto = tipoProductoInput.value;
   const oferta = ofertaInput.checked;
+  const cantidadOferta = oferta ? parseFloat(cantidadOfertaInput.value) || 0 : 0;
   const disponible = disponibleInput.checked;
-  const destacado = destacadoInput.checked; 
-  const preventa = preventaInput.checked; 
+  const destacado = destacadoInput.checked;
+  const preventa = preventaInput.checked;
   const cantidad = parseInt(cantidadInput.value) || 0;
   const imagenFile = imagenInput.files[0];
 
-  // Validación: TCG obligatorio solo si es Carta
   if (!nombre || !descripcion || isNaN(precio) || !tipo_producto || (tipo_producto === "Carta" && !tcg)) {
     alert("Completa todos los campos. TCG es obligatorio solo si es una carta.");
     return;
@@ -208,44 +220,41 @@ guardarBtn.addEventListener("click", async () => {
 
   if (imagenFile) {
     const fileName = `${Date.now()}_${imagenFile.name}`;
-    const { error: uploadError } = await supabase.storage
-      .from("productos")
-      .upload(fileName, imagenFile);
+    const { error: uploadError } = await supabase.storage.from("productos").upload(fileName, imagenFile);
     if (uploadError) return alert("Error al subir imagen: " + uploadError.message);
     publicUrl = supabase.storage.from("productos").getPublicUrl(fileName).data.publicUrl;
   }
 
-  if (editId) {
-    const productoActual = (await supabase
-      .from("productos")
-      .select("imagen")
-      .eq("id", editId)
-      .single()).data;
+  const updateData = {
+    nombre,
+    descripcion,
+    precio,
+    TCG: tcg || null,
+    tipo_producto,
+    oferta,
+    cantidad_oferta: cantidadOferta,
+    disponible,
+    destacado,
+    preventa,
+    cantidad
+  };
 
-    // Si hay una nueva imagen y el producto ya tenía una
+  if (publicUrl) updateData.imagen = publicUrl;
+
+  if (editId) {
+    const productoActual = (await supabase.from("productos").select("imagen").eq("id", editId).single()).data;
     if (publicUrl && productoActual.imagen) {
       const oldFileName = productoActual.imagen.split("/").pop();
       await supabase.storage.from("productos").remove([oldFileName]);
     }
 
-    const updateData = {
-      nombre,
-      descripcion,
-      precio,
-      TCG: tcg || null,
-      tipo_producto,
-      oferta,
-      disponible,
-      destacado,
-      preventa,
-      cantidad
-    };
-    if (publicUrl) updateData.imagen = publicUrl;
-
     await supabase.from("productos").update(updateData).eq("id", editId);
     saveMsg.textContent = "Producto actualizado correctamente!";
+  } else {
+    if (!publicUrl) return alert("Selecciona una imagen para el producto nuevo");
+    await supabase.from("productos").insert([updateData]);
+    saveMsg.textContent = "Producto agregado correctamente!";
   }
-
 
   // Limpiar formulario
   nombreInput.value = "";
@@ -256,15 +265,15 @@ guardarBtn.addEventListener("click", async () => {
   tipoProductoInput.value = "";
   imagenInput.value = "";
   ofertaInput.checked = false;
+  cantidadOfertaInput.value = 0;
+  cantidadOfertaInput.disabled = true;
   disponibleInput.checked = true;
-  destacadoInput.checked = false; // 👈 nuevo
+  destacadoInput.checked = false;
   preventaInput.checked = false;
   editId = null;
 
-  // Recargar lista de productos
   cargarProductosAdmin();
 });
-
 
 // ===================================================
 // =============== EVENTOS ============================
@@ -296,7 +305,10 @@ async function cargarEventosAdmin() {
     listaEventosDiv.innerHTML += `
       <div class="evento-admin" data-id="${e.id}">
         <img src="${e.imagen}" alt="${e.titulo}" width="50">
-        <strong>${e.titulo}</strong> - ${e.fecha}
+        <div class="evento-texto">
+          <strong>${e.titulo}</strong>
+          <span>${e.fecha}</span>
+        </div>
         <button class="editar-evento-btn">Editar</button>
         <button class="eliminar-evento-btn">Eliminar</button>
       </div>
@@ -678,5 +690,3 @@ tcgButtons.forEach(btn => {
     });
   });
 });
-
-
