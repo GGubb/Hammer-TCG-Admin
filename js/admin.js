@@ -80,6 +80,7 @@ const descripcionInput = document.getElementById("descripcion");
 const precioInput = document.getElementById("precio");
 const imagenInput = document.getElementById("imagen");
 const tcgInput = document.getElementById("tcg");
+const subTipoProductoInput = document.getElementById("sub_tipo_producto");
 const ofertaInput = document.getElementById("oferta");
 const cantidadOfertaInput = document.getElementById("cantidad_oferta");
 const disponibleInput = document.getElementById("disponible");
@@ -89,6 +90,89 @@ const cantidadInput = document.getElementById("cantidad");
 const guardarBtn = document.getElementById("guardar-btn");
 const saveMsg = document.getElementById("save-msg");
 
+
+let scrollPos = 0;
+
+// ==================== NUEVO: OPCIONES DE SUBTIPOS ====================
+const subTiposPorTCG = {
+  Magic: [
+    "Sobre",
+    "Sobre Collector",
+    "Caja de sobres",
+    "Caja de sobres Collector",
+    "Precons",
+    "Bundle",
+    "Preerelease",
+    "Cajas de escenas",
+    "Productos raros",
+  ],
+  Pokemon: [
+    "Sleeved Booster",
+    "Checklane Blister",
+    "Triple Blister",
+    "Elite Trainer Box",
+    "Build And Battle Box",
+    "Collector Box",
+    "Premium Collection",
+    "Starter Deck",
+    "Mini Tin",
+  ],
+  "One Piece": [
+    "Booster Pack",
+    "Booster Box",
+    "Starter Deck",
+    "Gift Collection",
+  ],
+  General: [
+    "Sobre",
+    "Caja de sobres",
+    "Bundle",
+  ],
+};
+
+// ============== ACTUALIZAR SUBTIPOS SEGÚN TIPO / TCG ==============
+function actualizarSubTipos() {
+  const tipo = tipoProductoInput.value;
+  const tcg = tcgInput.value;
+  subTipoProductoInput.innerHTML = ""; // limpiar opciones
+
+  if (tipo === "Carta") {
+    if (tcg && subTiposPorTCG[tcg]) {
+      let todosSubTipos = [...subTiposPorTCG[tcg]];
+
+      // Solo agregar los subtipos generales a Pokémon
+      if (tcg === "Pokemon") {
+        todosSubTipos.push("Sobre", "Caja de sobres");
+      }
+
+      todosSubTipos.forEach((st) => {
+        const option = document.createElement("option");
+        option.value = st;
+        option.textContent = st;
+        subTipoProductoInput.appendChild(option);
+      });
+    } else {
+      const option = document.createElement("option");
+      option.value = "";
+      option.textContent = "Selecciona un TCG primero";
+      subTipoProductoInput.appendChild(option);
+    }
+  } else {
+    // Para otros tipos, solo mostrar generales
+    ["Sobre", "Caja de sobres"].forEach((st) => {
+      const option = document.createElement("option");
+      option.value = st;
+      option.textContent = st;
+      subTipoProductoInput.appendChild(option);
+    });
+  }
+}
+
+
+// Eventos para actualizar dinámicamente
+tipoProductoInput.addEventListener("change", actualizarSubTipos);
+tcgInput.addEventListener("change", actualizarSubTipos);
+
 // Habilitar/deshabilitar según el checkbox de oferta
 ofertaInput.addEventListener("change", () => {
   cantidadOfertaInput.disabled = !ofertaInput.checked;
@@ -97,6 +181,9 @@ ofertaInput.addEventListener("change", () => {
 
 let editId = null;
 
+// ===================================================
+// ========== CARGAR PRODUCTOS ADMIN ================
+// ===================================================
 async function cargarProductosAdmin() {
   const { data: productos, error } = await supabase
     .from("productos")
@@ -108,58 +195,150 @@ async function cargarProductosAdmin() {
     return;
   }
 
-  // Limpiar todas las listas
-  document.getElementById("lista-cartas-magic").innerHTML = "";
-  document.getElementById("lista-cartas-pokemon").innerHTML = "";
-  document.getElementById("lista-cartas-onepiece").innerHTML = "";
-  document.getElementById("lista-carpetas").innerHTML = "";
-  document.getElementById("lista-protectores").innerHTML = "";
-  document.getElementById("lista-cajas").innerHTML = "";
-  document.getElementById("lista-otros").innerHTML = "";
-
-  productos.forEach((p) => {
-    let targetDiv;
-
-    if (p.tipo_producto === "Carta") {
-      if (p.TCG === "Magic") targetDiv = document.getElementById("lista-cartas-magic");
-      else if (p.TCG === "Pokemon") targetDiv = document.getElementById("lista-cartas-pokemon");
-      else if (p.TCG === "One Piece") targetDiv = document.getElementById("lista-cartas-onepiece");
-      else targetDiv = document.getElementById("lista-cartas-magic");
-    } else if (p.tipo_producto === "Carpeta") targetDiv = document.getElementById("lista-carpetas");
-    else if (p.tipo_producto === "Protector") targetDiv = document.getElementById("lista-protectores");
-    else if (p.tipo_producto === "Caja para deck") targetDiv = document.getElementById("lista-cajas");
-    else targetDiv = document.getElementById("lista-otros");
-
-    // Calcular precio en oferta si corresponde
-    const precioOferta = "";
-
-    // Crear badges
-    const ofertaBadge = ""; 
-    const stockBadge = "";
-
-    const html = `
-      <div class="product-item" data-id="${p.id}" style="position:relative;">
-        ${ofertaBadge}
-        ${stockBadge}
-        <img src="${p.imagen}" alt="${p.nombre}">
-        <div class="product-info">
-          <strong>${p.nombre}</strong>
-          <span>Precio: $${p.precio}</span>
-          <span>Oferta: ${p.oferta && p.cantidad_oferta > 0 ? `Sí (${p.cantidad_oferta}%)` : "No"}</span>
-          <span>TCG: ${p.TCG || "-"}</span>
-          <span>Cantidad: ${p.cantidad}</span>
-          <span>Preventa: ${p.preventa ? "Sí" : "No"}</span>
-          <span>Disponible: ${p.disponible ? "Sí" : "No"}</span>
-        </div>
-        <div class="product-actions">
-          <button class="editar-btn">Editar</button>
-          <button class="eliminar-btn">Eliminar</button>
-        </div>
-      </div>
-    `;
-    targetDiv.innerHTML += html;
+  // Limpiar todas las listas principales
+  const listas = [
+    "lista-cartas-magic",
+    "lista-cartas-pokemon",
+    "lista-cartas-onepiece",
+    "lista-carpetas",
+    "lista-protectores",
+    "lista-cajas",
+    "lista-otros",
+  ];
+  listas.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.querySelectorAll(".subtcg-section").forEach(sub => sub.innerHTML = "");
   });
 
+  productos.forEach(p => {
+    let targetDiv, html = "";
+
+    if (p.tipo_producto === "Carta") {
+      // Normalizar TCG
+      let baseId = "";
+      if (p.TCG === "Magic") baseId = "magic";
+      else if (p.TCG === "Pokemon") baseId = "pokemon";
+      else if (p.TCG === "One Piece") baseId = "onepiece";
+      else return; // si no tiene TCG válido, ignorar
+
+     // subtipo exactamente como viene (lowercase para match consistente)
+     const subtipo = (p.sub_tipo_producto || "").trim().toLowerCase();
+
+     // Mapas EXACTOS (solo las opciones que definiste en el HTML)
+     const mapaGeneral = {
+       "sobre": "magic-sobre",
+       "caja de sobres": "magic-caja",
+     };
+
+     // --- MAGIC ---
+     const mapaMagic = {
+       "sobre": "magic-sobres",
+       "sobre collector": "magic-sobres-collector",
+       "caja de sobres": "magic-caja-sobres",
+       "caja de sobres collector": "magic-caja-sobres-collector",
+       "precons": "magic-precons",
+       "bundle": "magic-bundle",
+       "preerelease": "magic-preerelease",
+       "cajas de escenas": "magic-cajas-escenas",
+       "productos raros": "magic-productos-raros",
+     };
+
+     // --- POKEMON ---
+     const mapaPokemon = {
+       "sobre": "pokemon-sobres",
+       "caja de sobres": "pokemon-caja-sobres",
+       "sleeved booster": "pokemon-sleeved-booster",
+       "checklane blister": "pokemon-checklane-blister",
+       "triple blister": "pokemon-triple-blister",
+       "elite trainer box": "pokemon-elite-trainer-box",
+       "build and battle box": "pokemon-build-battle-box",
+       "collector box": "pokemon-collector-box",
+       "premium collection": "pokemon-premium-collection",
+       "starter deck": "pokemon-starter-deck",
+       "mini tin": "pokemon-mini-tin",
+     };
+
+
+     // One Piece ya no tiene subpestañas, así que todos los productos van al contenedor general
+     const mapaOnePiece = {
+       "booster pack": "lista-onepiece-productos",
+       "booster box": "lista-onepiece-productos",
+       "starter deck": "lista-onepiece-productos",
+       "gift collection": "lista-onepiece-productos",
+       "sobre": "lista-onepiece-productos",
+       "caja de sobres": "lista-onepiece-productos",
+     };
+
+     // Elegir destino según TCG
+     if (baseId === "magic") {
+       const destinoId = mapaMagic[subtipo] || mapaGeneral[subtipo] || "magic-otros";
+       targetDiv = document.getElementById(destinoId);
+     } else if (baseId === "pokemon") {
+       const destinoId = mapaPokemon[subtipo] || mapaGeneral[subtipo] || "pokemon-otros";
+       targetDiv = document.getElementById(destinoId);
+     } else if (baseId === "onepiece") {
+       // 🔥 Para One Piece: enviar todo al único contenedor principal
+       targetDiv = document.getElementById("lista-onepiece-productos");
+     }
+
+
+      // Si no existe el contenedor, salir (evita errores en consola)
+      if (!targetDiv) return;
+
+      // HTML del item 
+      html = `
+        <div class="product-item carta" data-id="${p.id}">
+          <img src="${p.imagen}" alt="${p.nombre}">
+          <div class="product-info">
+            <strong>${p.nombre}</strong>
+            <div class="product-data">
+              <span>Precio: $${p.precio}</span>
+              <span>Subtipo: ${p.sub_tipo_producto || "-"}</span>
+              <span>TCG: ${p.TCG || "-"}</span>
+              <span>Cantidad: ${p.cantidad}</span>
+              <span>Oferta: ${p.oferta && p.cantidad_oferta > 0 ? `Sí (${p.cantidad_oferta}%)` : "No"}</span>
+              <span>Preventa: ${p.preventa ? "Sí" : "No"}</span>
+              <span>Disponible: ${p.disponible ? "Sí" : "No"}</span>
+            </div>
+          </div>
+          <div class="product-actions">
+            <button class="editar-btn">Editar</button>
+            <button class="eliminar-btn">Eliminar</button>
+          </div>
+        </div>
+      `;
+    } else {
+      // ACCESORIOS
+      if (p.tipo_producto === "Carpeta") targetDiv = document.getElementById("lista-carpetas");
+      else if (p.tipo_producto === "Protector") targetDiv = document.getElementById("lista-protectores");
+      else if (p.tipo_producto === "Caja para deck") targetDiv = document.getElementById("lista-cajas");
+      else targetDiv = document.getElementById("lista-otros");
+
+      html = `
+        <div class="product-item accesorio" data-id="${p.id}">
+          <img src="${p.imagen}" alt="${p.nombre}">
+          <div class="product-info">
+            <strong>${p.nombre}</strong>
+            <div class="product-data">
+              <span>Precio: $${p.precio}</span>
+              <span>Cantidad: ${p.cantidad}</span>
+              <span>Disponible: ${p.disponible ? "Sí" : "No"}</span>
+              <span>Oferta: ${p.oferta && p.cantidad_oferta > 0 ? `Sí (${p.cantidad_oferta}%)` : "No"}</span>
+            </div>
+          </div>
+          <div class="product-actions">
+            <button class="editar-btn">Editar</button>
+            <button class="eliminar-btn">Eliminar</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // Agregar HTML si existe el contenedor
+    if (targetDiv) targetDiv.innerHTML += html;
+  });
+
+  // Eventos eliminar y editar (igual que antes)
   document.querySelectorAll(".eliminar-btn").forEach((btn) => {
     btn.addEventListener("click", async () => {
       const id = btn.closest(".product-item").dataset.id;
@@ -185,6 +364,8 @@ async function cargarProductosAdmin() {
       precioInput.value = producto.precio;
       tcgInput.value = producto.TCG;
       tipoProductoInput.value = producto.tipo_producto;
+      actualizarSubTipos();
+      subTipoProductoInput.value = producto.sub_tipo_producto || "";
       ofertaInput.checked = producto.oferta;
       cantidadOfertaInput.value = producto.cantidad_oferta || 0;
       cantidadOfertaInput.disabled = !producto.oferta;
@@ -194,15 +375,22 @@ async function cargarProductosAdmin() {
       cantidadInput.value = producto.cantidad;
       editId = producto.id;
       saveMsg.textContent = "Editando producto...";
+      scrollPos = window.scrollY;
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
   });
 }
+
+// ===================================================
+// ============== GUARDAR PRODUCTO ===================
+// ===================================================
 guardarBtn.addEventListener("click", async () => {
   const nombre = nombreInput.value.trim();
   const descripcion = descripcionInput.value.trim();
   const precio = parseFloat(precioInput.value);
   const tcg = tcgInput.value;
   const tipo_producto = tipoProductoInput.value;
+  const sub_tipo_producto = subTipoProductoInput.value;
   const oferta = ofertaInput.checked;
   const cantidadOferta = oferta ? parseFloat(cantidadOfertaInput.value) || 0 : 0;
   const disponible = disponibleInput.checked;
@@ -231,12 +419,13 @@ guardarBtn.addEventListener("click", async () => {
     precio,
     TCG: tcg || null,
     tipo_producto,
+    sub_tipo_producto: sub_tipo_producto || null, // nuevo campo
     oferta,
     cantidad_oferta: cantidadOferta,
     disponible,
     destacado,
     preventa,
-    cantidad
+    cantidad,
   };
 
   if (publicUrl) updateData.imagen = publicUrl;
@@ -263,6 +452,7 @@ guardarBtn.addEventListener("click", async () => {
   cantidadInput.value = 0;
   tcgInput.value = "";
   tipoProductoInput.value = "";
+  subTipoProductoInput.innerHTML = "";
   imagenInput.value = "";
   ofertaInput.checked = false;
   cantidadOfertaInput.value = 0;
@@ -272,7 +462,17 @@ guardarBtn.addEventListener("click", async () => {
   preventaInput.checked = false;
   editId = null;
 
-  cargarProductosAdmin();
+  // Recargar productos
+  await cargarProductosAdmin();
+
+  // ------------------------------
+  // Volver al scroll guardado si venías de editar
+  if (scrollPos) {
+    setTimeout(() => {
+      window.scrollTo({ top: scrollPos, behavior: "smooth" });
+      scrollPos = 0; // reset
+    }, 500);
+  }
 });
 
 // ===================================================
@@ -500,6 +700,7 @@ tipoContenidoSelect.innerHTML = `
   <option value="logo_gmail">Logo Gmail</option>
   <option value="logo_ig">Logo Instagram</option>
   <option value="logo_face">Logo Facebook</option>
+  <option value="logo_pestaña">Logo Pestaña</option>
 `;
 
 async function cargarContenidoPublico() {
@@ -618,7 +819,7 @@ async function cargarLogosDesdeSupabase() {
     const { data, error } = await supabase
       .from("contenido_publico")
       .select("tipo, imagen")
-      .in("tipo", ["logo_login", "logo_admin"]);
+      .in("tipo", ["logo_login", "logo_admin", "logo_pestaña"]);
 
     if (error) {
       console.error("Error al obtener logos:", error);
@@ -626,11 +827,28 @@ async function cargarLogosDesdeSupabase() {
     }
 
     data.forEach((item) => {
-      if (item.tipo === "logo_login" && loginLogo) {
-        loginLogo.src = item.imagen;
+      if (item.tipo === "logo_login") {
+        const loginLogo = document.getElementById("login-logo");
+        if (loginLogo) loginLogo.src = item.imagen;
       }
-      if (item.tipo === "logo_admin" && inicioLogo) {
-        inicioLogo.src = item.imagen;
+
+      if (item.tipo === "logo_admin") {
+        const inicioLogo = document.getElementById("inicio-logo");
+        if (inicioLogo) inicioLogo.src = item.imagen;
+      }
+
+      if (item.tipo === "logo_pestaña") {
+        const favicon = document.getElementById("favicon");
+        if (favicon) {
+          favicon.href = item.imagen;
+        } else {
+          // Si el link no existe, lo crea
+          const newFavicon = document.createElement("link");
+          newFavicon.rel = "icon";
+          newFavicon.type = "image/png";
+          newFavicon.href = item.imagen;
+          document.head.appendChild(newFavicon);
+        }
       }
     });
 
@@ -638,7 +856,6 @@ async function cargarLogosDesdeSupabase() {
     console.error("Error al cargar logos:", err);
   }
 }
-
 
 // Cambiar pestañas
 const tabButtons = document.querySelectorAll(".tab-btn");
@@ -674,8 +891,39 @@ subtabButtons.forEach(btn => {
   });
 });
 
+// ====================== CONTROL DE SUBPESTAÑAS POR TCG ======================
+document.querySelectorAll(".tcg-list").forEach(tcgList => {
+  const subtcgTabs = tcgList.querySelector(".subtcg-tabs");
+  const subtcgButtons = subtcgTabs ? subtcgTabs.querySelectorAll(".subtcg-btn") : [];
+  const subtcgSections = tcgList.querySelectorAll(".subtcg-section");
 
-// Cambiar subpestañas TCG dentro de Cartas
+  subtcgButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      // Desactivar todo dentro del TCG actual
+      subtcgButtons.forEach(b => b.classList.remove("active"));
+      subtcgSections.forEach(s => s.classList.remove("active"));
+
+      // Activar el botón y la sección correspondiente
+      btn.classList.add("active");
+      const target = btn.dataset.subtcg;
+      const targetSection = tcgList.querySelector(`#${target}`);
+      if (targetSection) targetSection.classList.add("active");
+    });
+  });
+
+  // Al cargar, aseguramos que solo la primera sección esté activa
+  if (subtcgButtons.length > 0) {
+    const firstBtn = subtcgButtons[0];
+    const firstTarget = firstBtn.dataset.subtcg;
+    const firstSection = tcgList.querySelector(`#${firstTarget}`);
+    subtcgButtons.forEach(b => b.classList.remove("active"));
+    subtcgSections.forEach(s => s.classList.remove("active"));
+    firstBtn.classList.add("active");
+    if (firstSection) firstSection.classList.add("active");
+  }
+});
+
+// ====================== CONTROL PRINCIPAL DE TCG (Magic / Pokémon / One Piece) ======================
 const tcgButtons = document.querySelectorAll(".tcg-btn");
 const tcgLists = document.querySelectorAll(".tcg-list");
 

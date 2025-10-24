@@ -18,6 +18,7 @@
       flex-wrap: wrap;     /* si no caben, saltan a otra línea */
     }
   </style>
+  <link id="favicon" rel="icon" type="image/png" href="">
 </head>
 <body>
   <!-- Título principal -->
@@ -86,6 +87,35 @@
             <option value="One Piece">One Piece</option>
           </select>
 
+          <!-- SubTipo de producto -->
+          <select id="sub_tipo_producto" required>
+            <option value="">Selecciona tipo de producto</option>
+
+             <!-- Tipo de producto general -->
+            <option value="Sobre">Sobre</option>
+            <option value="Caja de sobres">Caja de sobres</option>
+
+            <!-- Tipo de producto magic -->
+            <option value="Sobre Collector">Sobre Collector</option>
+            <option value="Caja de sobres Collector">Caja de sobres collector</option>
+            <option value="Precons">Precon</option>
+            <option value="Bundle">Bundle</option>
+            <option value="Preerelease">Preselease</option>
+            <option value="Cajas de escenas">Cajas de escenas</option>
+            <option value="Productos raros">Productos raros</option>
+
+            <!-- Tipo de Pokemon -->
+            <option value="Sleeved Booster">Sleeved Booster</option>
+            <option value="Checklane Blister">Checklane Blister</option>
+            <option value="Triple Blister">Triple Blister</option>
+            <option value="Elite Trainer Box">Elite Trainer Box</option>
+            <option value="Build And Battle Box">Build And Battle Box</option>
+            <option value="Collector Box">Collector Box</option>
+            <option value="Premium Collection">Premium Collection</option>
+            <option value="Starter Deck">Starter Deck</option>
+            <option value="Mini Tin">Mini Tin</option>
+          </select>
+
           <label><input type="checkbox" id="oferta"> Oferta</label>
           <input type="number" id="cantidad_oferta" min="0" max="100" />
           <label><input type="checkbox" id="disponible" checked> Disponible</label>
@@ -121,9 +151,68 @@
 
               <!-- Contenedores separados por TCG -->
               <div class="tcg-listas">
-                <div class="tcg-list active" id="lista-cartas-magic"></div>
-                <div class="tcg-list" id="lista-cartas-pokemon"></div>
-                <div class="tcg-list" id="lista-cartas-onepiece"></div>
+                <!-- MAGIC -->
+                <div class="tcg-list active" id="lista-cartas-magic">
+                  <div class="subtcg-tabs">
+                    <button class="subtcg-btn active" data-subtcg="magic-sobres">Sobres</button>
+                    <button class="subtcg-btn" data-subtcg="magic-sobres-collector">Sobres Collector</button>
+                    <button class="subtcg-btn" data-subtcg="magic-caja-sobres">Cajas de sobres</button>
+                    <button class="subtcg-btn" data-subtcg="magic-caja-sobres-collector">Cajas de sobres Collector</button>
+                    <button class="subtcg-btn" data-subtcg="magic-precons">Precons</button>
+                    <button class="subtcg-btn" data-subtcg="magic-bundle">Bundle</button>
+                    <button class="subtcg-btn" data-subtcg="magic-preerelease">Preerelease</button>
+                    <button class="subtcg-btn" data-subtcg="magic-cajas-escenas">Cajas de escenas</button>
+                    <button class="subtcg-btn" data-subtcg="magic-productos-raros">Productos raros</button>
+                  </div>
+
+                  <div class="subtcg-content">
+                    <div id="magic-sobres" class="subtcg-section active"></div>
+                    <div id="magic-sobres-collector" class="subtcg-section"></div>
+                    <div id="magic-caja-sobres" class="subtcg-section"></div>
+                    <div id="magic-caja-sobres-collector" class="subtcg-section"></div>
+                    <div id="magic-precons" class="subtcg-section"></div>
+                    <div id="magic-bundle" class="subtcg-section"></div>
+                    <div id="magic-preerelease" class="subtcg-section"></div>
+                    <div id="magic-cajas-escenas" class="subtcg-section"></div>
+                    <div id="magic-productos-raros" class="subtcg-section"></div>
+                  </div>
+                </div>
+
+                <!-- POKEMON -->
+                <div class="tcg-list" id="lista-cartas-pokemon">
+                  <div class="subtcg-tabs">
+                    <button class="subtcg-btn active" data-subtcg="pokemon-sobres">Sobres</button>
+                    <button class="subtcg-btn" data-subtcg="pokemon-caja-sobres">Cajas de sobres</button>
+                    <button class="subtcg-btn" data-subtcg="pokemon-sleeved-booster">Sleeved Booster</button>
+                    <button class="subtcg-btn" data-subtcg="pokemon-checklane-blister">Checklane Blister</button>
+                    <button class="subtcg-btn" data-subtcg="pokemon-triple-blister">Triple Blister</button>
+                    <button class="subtcg-btn" data-subtcg="pokemon-elite-trainer-box">Elite Trainer Box</button>
+                    <button class="subtcg-btn" data-subtcg="pokemon-build-battle-box">Build & Battle Box</button>
+                    <button class="subtcg-btn" data-subtcg="pokemon-collector-box">Collector Box</button>
+                    <button class="subtcg-btn" data-subtcg="pokemon-premium-collection">Premium Collection</button>
+                    <button class="subtcg-btn" data-subtcg="pokemon-starter-deck">Starter Deck</button>
+                    <button class="subtcg-btn" data-subtcg="pokemon-mini-tin">Mini Tin</button>
+                  </div>
+
+                  <div class="subtcg-content">
+                    <div id="pokemon-sobres" class="subtcg-section active"></div>
+                    <div id="pokemon-caja-sobres" class="subtcg-section"></div>
+                    <div id="pokemon-sleeved-booster" class="subtcg-section"></div>
+                    <div id="pokemon-checklane-blister" class="subtcg-section"></div>
+                    <div id="pokemon-triple-blister" class="subtcg-section"></div>
+                    <div id="pokemon-elite-trainer-box" class="subtcg-section"></div>
+                    <div id="pokemon-build-battle-box" class="subtcg-section"></div>
+                    <div id="pokemon-collector-box" class="subtcg-section"></div>
+                    <div id="pokemon-premium-collection" class="subtcg-section"></div>
+                    <div id="pokemon-starter-deck" class="subtcg-section"></div>
+                    <div id="pokemon-mini-tin" class="subtcg-section"></div>
+                  </div>
+                </div>
+
+                <!-- ONE PIECE (sin subpestañas) -->
+                <div class="tcg-list" id="lista-cartas-onepiece">
+                  <div id="lista-onepiece-productos" class="subtcg-section active"></div>
+                </div>
               </div>
             </div>
 
@@ -186,6 +275,7 @@
           <option value="logo_gmail">Logo Gmail</option>
           <option value="logo_ig">Logo Instagram</option>
           <option value="logo_face">Logo Facebook</option>
+          <option value="logo_pestaña">Logo Pestaña</option>
         </select>
 
         <label for="contenido-tcg">TCG:</label>
@@ -292,5 +382,36 @@
   });
   </script>
 
+  <script>
+    // ================= SUBPESTAÑAS POR SUBTIPO DENTRO DE TCG =================
+    document.querySelectorAll(".tcg-list").forEach(tcgList => {
+      const subTabGroup = tcgList.querySelector(".subtcg-tabs");
+      const buttons = subTabGroup ? subTabGroup.querySelectorAll(".subtcg-btn") : [];
+      const sections = tcgList.querySelectorAll(".subtcg-section");
+
+      buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          // Quitar active solo dentro del TCG correspondiente
+          buttons.forEach(b => b.classList.remove("active"));
+          sections.forEach(s => s.classList.remove("active"));
+
+          // Activar el botón clickeado y su sección asociada
+          btn.classList.add("active");
+          const targetId = btn.dataset.subtcg;
+          const targetSection = tcgList.querySelector(`#${targetId}`);
+          if (targetSection) targetSection.classList.add("active");
+        });
+      });
+
+      // Activar la primera pestaña de cada grupo al cargar
+      if (buttons.length > 0) {
+        buttons[0].classList.add("active");
+        const firstId = buttons[0].dataset.subtcg;
+        const firstSection = tcgList.querySelector(`#${firstId}`);
+        if (firstSection) firstSection.classList.add("active");
+      }
+    });
+  </script>
+  
 </body>
 </html>
