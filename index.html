@@ -44,7 +44,7 @@
       <button class="tab-btn active" data-tab="productos-tab">Productos</button>
       <button class="tab-btn" data-tab="eventos-tab">Eventos</button>
       <button class="tab-btn" data-tab="contenido-publico-tab">Contenido Público</button>
-      <button class="tab-btn" data-tab="roles-tab">Roles</button>
+      <button class="tab-btn" data-tab="sorteos-tab">Sorteos</button>
     </div>
 
     <!-- PRODUCTOS -->
@@ -314,21 +314,54 @@
         <div id="lista-assets" class="contenido-lista"></div>
       </div>
     </section>
-
-    <!-- ROLES -->
-    <section id="roles-tab" class="tab-section">
-      <div class="tab-content">
-        <h2>Gestión de Roles (solo admin)</h2>
-        <input type="email" id="nuevo-admin-email" placeholder="Email del nuevo admin (o ingresa UUID en 'profiles')">
-        <button id="agregar-admin-btn">Agregar como Admin</button>
-        <p id="roles-msg" style="color:green;"></p>
-
-        <h3>Admins actuales</h3>
-        <div id="lista-admins"></div>
-      </div>
-    </section>
-
   </div>
+
+  <!-- SORTEOS -->
+  <section id="sorteos-tab" class="tab-section">
+    <div class="tab-content">
+      <div id="sorteo-msg" class="mensaje"></div>
+
+      <!-- 🔸 Título principal -->
+      <h2>Sorteos existentes</h2>
+
+      <!-- Contenedor gris para los sorteos existentes -->
+      <div class="sorteos-existentes">
+        <ul id="lista-sorteos"></ul>
+      </div>
+
+
+      <!-- Crear o editar un sorteo -->
+      <h3 class="titulo-crear-sorteo">Agregar / Editar Sorteo</h3>
+      <div class="crear-sorteo">
+        <input type="text" id="sorteo-nombre" placeholder="Nombre del sorteo" required>
+        <textarea id="sorteo-descripcion" placeholder="Descripción (opcional)"></textarea>
+        <button id="crear-sorteo-btn">Guardar Sorteo</button>
+      </div>
+
+      <!-- 🔸 Título fuera del contenedor gris -->
+      <h3 class="titulo-participantes">Lista de Participantes</h3>
+
+      <!-- Participantes -->
+      <div class="participantes">
+        <div class="input-group">
+          <input type="text" id="participante-nombre" placeholder="Nombre del participante">
+          <button id="agregar-participante-btn">Agregar</button>
+        </div>
+        <ul id="lista-participantes"></ul>
+      </div>
+
+      <!-- Ruleta -->
+      <div class="ruleta-container">
+        <h3>Ruleta de Sorteos</h3>
+        <canvas id="ruletaCanvas" width="400" height="400"></canvas>
+        <div class="puntero">▲</div>
+        <button id="girar-btn" class="btn-girar">Girar Ruleta</button>
+      </div>
+
+      <h3 id="ganador" class="ganador-text"></h3>
+      <div id="mensaje" class="mensaje"></div>
+    </div>
+  </section>
 
   <script type="module" src="./js/admin.js"></script>
   <script>
@@ -412,6 +445,9 @@
       }
     });
   </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
   
 </body>
 </html>

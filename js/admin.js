@@ -67,7 +67,6 @@ loginBtn.addEventListener("click", async () => {
   // Cargar datos
   cargarProductosAdmin();
   cargarEventosAdmin();
-  cargarAdmins();
   cargarContenidoPublico();
   cargarLogosDesdeSupabase();
 });
@@ -591,94 +590,7 @@ guardarEventoBtn.addEventListener("click", async () => {
   cargarEventosAdmin();
 });
 
-// ===================================================
-// =============== GESTIÓN DE ROLES ===================
-// ===================================================
-const rolesMsg = document.getElementById("roles-msg");
-const listaAdminsDiv = document.getElementById("lista-admins");
-const nuevoAdminEmail = document.getElementById("nuevo-admin-email");
-const agregarAdminBtn = document.getElementById("agregar-admin-btn");
 
-async function cargarAdmins() {
-  const { data: admins, error } = await supabase
-    .from("roles")
-    .select("id, rol, id_usuario, creado_por, cuando_fue")
-    .eq("rol", "admin");
-
-  if (error) {
-    console.error("Error al cargar admins:", error);
-    return;
-  }
-
-  listaAdminsDiv.innerHTML = admins
-    .map(
-      (a) => `
-      <div class="admin-item" data-id="${a.id_usuario}">
-        <strong>${a.id_usuario}</strong> — asignado: ${a.cuando_fue || "?"} (creado_por: ${a.creado_por || "?"})
-        <button class="quitar-admin-btn">Quitar</button>
-      </div>
-    `
-    )
-    .join("");
-
-  // Eliminar admin usando endpoint removeAdmin.js
-  document.querySelectorAll(".quitar-admin-btn").forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      const userId = btn.parentElement.dataset.id;
-      if (!confirm("¿Quitar permisos de admin a este usuario?")) return;
-
-      try {
-        const response = await fetch("/removeAdmin", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id_usuario: userId })
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-          rolesMsg.textContent = "Admin eliminado correctamente.";
-          cargarAdmins();
-        } else {
-          alert("Error al quitar admin: " + (result.error || "desconocido"));
-        }
-      } catch (err) {
-        console.error("Error al llamar removeAdmin:", err);
-        alert("Error de conexión con el servidor.");
-      }
-    });
-  });
-}
-
-// Agregar nuevo admin usando endpoint addAdmin.js
-agregarAdminBtn.addEventListener("click", async () => {
-  const email = nuevoAdminEmail.value.trim();
-  if (!email) return alert("Ingresa el email del nuevo admin.");
-
-  try {
-    const response = await fetch("/addAdmin", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email,
-        creado_por: currentUser?.id || null
-      })
-    });
-
-    const result = await response.json();
-
-    if (response.ok) {
-      rolesMsg.textContent = "Nuevo admin agregado correctamente.";
-      nuevoAdminEmail.value = "";
-      cargarAdmins();
-    } else {
-      alert("Error al agregar admin: " + (result.error || "desconocido"));
-    }
-  } catch (err) {
-    console.error("Error al llamar addAdmin:", err);
-    alert("Error de conexión con el servidor.");
-  }
-});
 
 // ================= CONTENIDO PÚBLICO ===================
 const contenidoImagenInput = document.getElementById("contenido-imagen");
@@ -810,6 +722,365 @@ guardarContenidoBtn.addEventListener("click", async () => {
 
   cargarContenidoPublico();
 });
+
+
+// ======================================================
+//                      SORTEOS 
+// ======================================================
+
+let participantes = []
+let sorteoActual = null
+
+// Elementos del DOM
+const canvas = document.getElementById("ruletaCanvas")
+const ctx = canvas ? canvas.getContext("2d") : null
+
+const inputNombreSorteo = document.getElementById("sorteo-nombre")
+const inputDescripcionSorteo = document.getElementById("sorteo-descripcion")
+const btnCrearSorteo = document.getElementById("crear-sorteo-btn")
+const inputParticipante = document.getElementById("participante-nombre")
+const btnAgregarParticipante = document.getElementById("agregar-participante-btn")
+const listaParticipantes = document.getElementById("lista-participantes")
+const btnGirar = document.getElementById("girar-btn")
+const lblGanador = document.getElementById("ganador")
+
+//  Contenedor donde mostraremos la lista de sorteos existentes
+const contenedorSorteos = document.getElementById("lista-sorteos");
+
+// -----------------------------
+// 🧱 Crear sorteo
+// -----------------------------
+async function crearSorteo() {
+  const nombre = inputNombreSorteo.value.trim()
+  const descripcion = inputDescripcionSorteo.value.trim()
+
+  if (!nombre) return alert("⚠️ Debes ingresar un nombre para el sorteo.")
+
+  const { data, error } = await supabase
+    .from("sorteos")
+    .insert([{ nombre, descripcion }])
+    .select()
+    .single()
+
+  if (error) {
+    console.error(error)
+    return alert("❌ Error al crear el sorteo.")
+  }
+
+  sorteoActual = data
+  participantes = []
+  listaParticipantes.innerHTML = ""
+  lblGanador.textContent = ""
+
+  alert(`✅ Sorteo "${nombre}" creado correctamente.`)
+  cargarSorteos()
+}
+
+btnCrearSorteo?.addEventListener("click", crearSorteo)
+
+// -----------------------------
+// 📋 Cargar lista de sorteos existentes
+// -----------------------------
+async function cargarSorteos() {
+  const { data, error } = await supabase.from("sorteos").select("*")
+
+  if (error) {
+    console.error("Error al cargar sorteos:", error)
+    return
+  }
+
+  // Limpia la lista
+  contenedorSorteos.innerHTML = ""
+
+  // Crea la estructura tipo lista (como los participantes)
+  data.forEach((sorteo) => {
+    const li = document.createElement("li")
+    li.className = "sorteo-item"
+    li.innerHTML = `
+      <span class="sorteo-nombre">${sorteo.nombre}</span>
+      <div class="botones-sorteo">
+        <button class="btn-cargar" data-id="${sorteo.id}">Seleccionar</button>
+        <button class="btn-eliminar" data-id="${sorteo.id}">Borrar</button>
+      </div>
+    `
+    contenedorSorteos.appendChild(li)
+  })
+
+  // Eventos: cargar sorteo
+  document.querySelectorAll(".btn-cargar").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      sorteoActual = { id: btn.dataset.id }
+      cargarParticipantes(sorteoActual.id)
+      alert(`📂 Sorteo cargado (ID: ${sorteoActual.id})`)
+    })
+  })
+
+  // Eventos: eliminar sorteo
+  document.querySelectorAll(".btn-eliminar").forEach((btn) => {
+    btn.addEventListener("click", () => eliminarSorteo(btn.dataset.id))
+  })
+}
+
+// -----------------------------
+// ❌ Eliminar sorteo
+// -----------------------------
+async function eliminarSorteo(id) {
+  if (!confirm("¿Seguro que deseas eliminar este sorteo?")) return
+
+  // Borrar participantes relacionados
+  await supabase.from("participantes").delete().eq("sorteo_id", id)
+
+  // Borrar el sorteo
+  const { error } = await supabase.from("sorteos").delete().eq("id", id)
+
+  if (error) {
+    console.error(error)
+    alert("❌ Error eliminando el sorteo.")
+  } else {
+    alert("✅ Sorteo eliminado.")
+    if (sorteoActual?.id === id) {
+      sorteoActual = null
+      participantes = []
+      listaParticipantes.innerHTML = ""
+      lblGanador.textContent = ""
+      dibujarRuleta()
+    }
+    cargarSorteos()
+  }
+}
+
+// -----------------------------
+// ➕ Agregar participante
+// -----------------------------
+btnAgregarParticipante?.addEventListener("click", async () => {
+  const nombre = inputParticipante.value.trim()
+  if (!nombre) return alert("⚠️ Ingresa un nombre de participante.")
+  if (!sorteoActual) return alert("⚠️ Crea o carga un sorteo antes de agregar participantes.")
+
+  const { data, error } = await supabase
+    .from("participantes")
+    .insert([{ nombre, sorteo_id: sorteoActual.id }])
+    .select()
+    .single()
+
+  if (error) {
+    console.error(error)
+    return alert("❌ No se pudo agregar el participante.")
+  }
+
+  participantes.push({ id: data.id, nombre: data.nombre })
+  renderParticipantes()
+  inputParticipante.value = ""
+  dibujarRuleta()
+})
+
+// -----------------------------
+// ✏️ Renderizar lista de participantes con botones de editar/eliminar
+// -----------------------------
+function renderParticipantes() {
+  listaParticipantes.innerHTML = ""
+
+  participantes.forEach((p) => {
+    const li = document.createElement("li")
+    li.innerHTML = `
+      <span contenteditable="true" class="editable-nombre" data-id="${p.id}">${p.nombre}</span>
+      <div class="botones-participante">
+        <button class="btn-guardar" data-id="${p.id}">Actualizar</button>
+        <button class="btn-borrar" data-id="${p.id}">Borrar</button>
+      </div>
+    `
+    listaParticipantes.appendChild(li)
+  })
+
+  document.querySelectorAll(".btn-borrar").forEach((btn) => {
+    btn.addEventListener("click", () => eliminarParticipante(btn.dataset.id))
+  })
+
+  document.querySelectorAll(".btn-guardar").forEach((btn) => {
+    btn.addEventListener("click", () => editarParticipante(btn.dataset.id))
+  })
+}
+
+// -----------------------------
+// 🗑️ Eliminar participante
+// -----------------------------
+async function eliminarParticipante(id) {
+  const { error } = await supabase.from("participantes").delete().eq("id", id)
+  if (error) {
+    console.error(error)
+    return alert("❌ Error al eliminar participante.")
+  }
+
+  participantes = participantes.filter((p) => p.id != id)
+  renderParticipantes()
+  dibujarRuleta()
+}
+
+// -----------------------------
+// ✏️ Editar participante
+// -----------------------------
+async function editarParticipante(id) {
+  const span = document.querySelector(`.editable-nombre[data-id="${id}"]`)
+  const nuevoNombre = span.textContent.trim()
+
+  const { error } = await supabase.from("participantes").update({ nombre: nuevoNombre }).eq("id", id)
+  if (error) {
+    console.error(error)
+    alert("❌ Error al editar participante.")
+    return
+  }
+
+  const participante = participantes.find((p) => p.id == id)
+  if (participante) participante.nombre = nuevoNombre
+  alert("✅ Participante actualizado.")
+  dibujarRuleta()
+}
+
+// -----------------------------
+// 🔄 Cargar participantes desde Supabase
+// -----------------------------
+async function cargarParticipantes(sorteoId) {
+  const { data, error } = await supabase
+    .from("participantes")
+    .select("id, nombre")
+    .eq("sorteo_id", sorteoId)
+
+  if (error) {
+    console.error("Error al cargar participantes:", error)
+    return
+  }
+
+  participantes = data
+  renderParticipantes()
+  dibujarRuleta()
+}
+
+// -----------------------------
+// 🌀 Dibujar ruleta
+// -----------------------------
+function dibujarRuleta() {
+  if (!ctx) return
+  const total = participantes.length
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  if (total === 0) return
+
+  const angulo = (2 * Math.PI) / total
+  const colores = ["#ff7675", "#74b9ff", "#55efc4", "#ffeaa7", "#fd79a8", "#a29bfe"]
+
+  for (let i = 0; i < total; i++) {
+    ctx.beginPath()
+    ctx.moveTo(200, 200)
+    ctx.fillStyle = colores[i % colores.length]
+    ctx.arc(200, 200, 200, i * angulo, (i + 1) * angulo)
+    ctx.fill()
+
+    ctx.save()
+    ctx.translate(200, 200)
+    ctx.rotate(i * angulo + angulo / 2)
+    ctx.fillStyle = "#000"
+    ctx.textAlign = "right"
+    ctx.font = "16px Arial"
+    ctx.fillText(participantes[i].nombre, 190, 10)
+    ctx.restore()
+  }
+}
+
+// -----------------------------
+// 🎯 Girar ruleta con animación
+// -----------------------------
+let anguloActual = 0
+let animando = false
+
+btnGirar?.addEventListener("click", () => {
+  if (animando) return
+  if (participantes.length === 0) return alert("⚠️ Agrega participantes primero.")
+  if (!sorteoActual) return alert("⚠️ Crea o carga un sorteo antes de girar la ruleta.")
+
+  // 🧹 Limpiar el texto y efecto del ganador anterior
+  lblGanador.textContent = ""
+  lblGanador.classList.remove("mostrar-ganador")
+
+  animando = true
+  const total = participantes.length
+  const velocidadInicial = Math.random() * 0.3 + 0.35 // velocidad aleatoria inicial
+  const duracion = 5000 // duración total de la animación en ms
+  const tiempoInicio = performance.now()
+
+  function animar(tiempo) {
+    let progreso = (tiempo - tiempoInicio) / duracion
+    if (progreso > 1) progreso = 1
+    const factorDesaceleracion = Math.pow(1 - progreso, 2)
+    anguloActual += velocidadInicial * factorDesaceleracion
+
+    dibujarRuletaAnimada(anguloActual)
+
+    if (progreso < 1) {
+      requestAnimationFrame(animar)
+    } else {
+      // Calcular ganador corregido
+      const anguloFinal = (anguloActual % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI)
+      const indiceGanador = Math.floor(
+        ((2 * Math.PI) - anguloFinal + Math.PI / 2) / ((2 * Math.PI) / total)
+      ) % total
+      const ganador = participantes[indiceGanador].nombre
+
+      // Mostrar ganador con animación
+      lblGanador.textContent = `🎉 ${ganador} 🎉`
+      lblGanador.classList.add("mostrar-ganador")
+
+      // Lanzar confeti durante 2 segundos
+      const duration = 2000
+      const end = Date.now() + duration
+
+      function lanzarConfeti() {
+        confetti({
+          particleCount: 6,
+          spread: 70,
+          origin: { y: 0.6 },
+        })
+        if (Date.now() < end) {
+          requestAnimationFrame(lanzarConfeti)
+        } else {
+          animando = false
+        }
+      }
+
+      lanzarConfeti()
+    }
+  }
+  requestAnimationFrame(animar)
+})
+
+
+function dibujarRuletaAnimada(rotacion) {
+  if (!ctx) return
+  const total = participantes.length
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  if (total === 0) return
+
+  const angulo = (2 * Math.PI) / total
+  const colores = ["#ff7675", "#74b9ff", "#55efc4", "#ffeaa7", "#fd79a8", "#a29bfe"]
+
+  for (let i = 0; i < total; i++) {
+    ctx.beginPath()
+    ctx.moveTo(200, 200)
+    ctx.fillStyle = colores[i % colores.length]
+    ctx.arc(200, 200, 200, rotacion + i * angulo, rotacion + (i + 1) * angulo)
+    ctx.fill()
+
+    ctx.save()
+    ctx.translate(200, 200)
+    ctx.rotate(rotacion + i * angulo + angulo / 2)
+    ctx.fillStyle = "#000"
+    ctx.textAlign = "right"
+    ctx.font = "16px Arial"
+    ctx.fillText(participantes[i].nombre, 190, 10)
+    ctx.restore()
+  }
+}
+// Inicializar al abrir
+cargarSorteos()
+
 
 // ===================================================
 // =============== LOGOS DESDE SUPABASE ===============
