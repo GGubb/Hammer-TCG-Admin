@@ -359,6 +359,8 @@
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   }
 }
+
+
 /* ==========  FINAL DE PRODUCTOS ========== */
 
 /* ========== EVENTOS ========== */
@@ -951,6 +953,102 @@
     text-shadow: 0 0 20px #ffff00, 0 0 30px #ffa500, 0 0 50px #ff4500;
   }
 }
+
+/* ========== pruebas ========== */
+
+/* === RESERVAS === */
+.reserva-item {
+  background: #1a1a1a; /* Fondo oscuro consistente con tu panel */
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 12px;
+  color: #e0e0e0; /* Texto claro legible */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reserva-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+}
+
+.reserva-item p {
+  margin: 4px 0;
+  font-size: 14px;
+  line-height: 1.4em;
+}
+
+.reserva-item strong {
+  color: #ffb347; /* Dorado suave para destacar etiquetas */
+}
+
+.reserva-item .acciones {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+}
+
+/* Botones */
+.reserva-item button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: background-color 0.2s ease;
+}
+
+.btn-confirmar {
+  background-color: #27ae60;
+  color: white;
+}
+
+.btn-confirmar:hover {
+  background-color: #2ecc71;
+}
+
+.btn-eliminar {
+  background-color: #c0392b;
+  color: white;
+}
+
+.btn-eliminar:hover {
+  background-color: #e74c3c;
+}
+
+/* Contenedor general de la lista */
+#reservas-lista {
+  min-height: 400px; /* ✅ asegura altura visual aunque esté vacía */
+  max-height: 600px; /* evita que se extienda demasiado */
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: flex-start; /* ✅ evita que el contenido se pegue abajo */
+}
+
+/* Texto o mensaje cuando no hay reservas */
+#reservas-lista.vacio::before {
+  content: "No hay reservas registradas aún.";
+  color: #888;
+  font-size: 15px;
+  text-align: center;
+  margin-top: 40px;
+}
+
+/* Scroll elegante */
+#reservas-lista::-webkit-scrollbar {
+  width: 6px;
+}
+
+#reservas-lista::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 6px;
+}
+
 
 
 /* ========== BASE PARA TABS ========== */

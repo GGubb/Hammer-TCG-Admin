@@ -1081,6 +1081,119 @@ function dibujarRuletaAnimada(rotacion) {
 // Inicializar al abrir
 cargarSorteos()
 
+// ==========================
+//  PANEL DE RESERVAS
+// ==========================
+
+async function cargarReservas() {
+  try {
+    const { data, error } = await supabase
+      .from("reservas")
+      .select("*")
+      .order("fecha", { ascending: false });
+
+    if (error) throw error;
+
+    const contenedor = document.getElementById("reservas-lista");
+    contenedor.innerHTML = "";
+
+    // ⚡️ Elimina cualquier clase previa
+    contenedor.classList.remove("vacio");
+
+    if (!data.length) {
+      // ⚡️ Aplica la clase "vacio" en lugar de solo texto
+      contenedor.classList.add("vacio");
+      return;
+    }
+
+    data.forEach((reserva) => {
+      const div = document.createElement("div");
+      div.className = "reserva-item";
+      div.innerHTML = `
+        <p><strong>Producto:</strong> ${reserva.producto}</p>
+        <p><strong>Nombre:</strong> ${reserva.nombre}</p>
+        <p><strong>RUT:</strong> ${reserva.rut}</p>
+        <p><strong>Correo:</strong> ${reserva.correo}</p>
+        <p><strong>Fecha:</strong> ${new Date(reserva.fecha).toLocaleString("es-CL")}</p>
+        <p><strong>Estado:</strong> ${reserva.confirmada ? "✅ Confirmada" : "⏳ Pendiente"}</p>
+        <div class="acciones">
+          ${
+            !reserva.confirmada
+              ? `<button class="btn-confirmar" data-id="${reserva.id}">Confirmar</button>`
+              : ""
+          }
+          <button class="btn-eliminar" data-id="${reserva.id}">Eliminar</button>
+        </div>
+      `;
+      contenedor.appendChild(div);
+    });
+
+    // Asignar eventos a los botones
+    document.querySelectorAll(".btn-confirmar").forEach((btn) => {
+      btn.addEventListener("click", async (e) => {
+        const id = e.target.dataset.id;
+        await confirmarReserva(id);
+      });
+    });
+
+    document.querySelectorAll(".btn-eliminar").forEach((btn) => {
+      btn.addEventListener("click", async (e) => {
+        const id = e.target.dataset.id;
+        await eliminarReserva(id);
+      });
+    });
+  } catch (err) {
+    console.error("Error al cargar reservas:", err);
+  }
+}
+
+async function confirmarReserva(id) {
+  try {
+    const { error } = await supabase
+      .from("reservas")
+      .update({ confirmada: true })
+      .eq("id", id);
+
+    if (error) throw error;
+    mostrarMensaje("✅ Reserva confirmada correctamente.", "green");
+    cargarReservas();
+  } catch (err) {
+    console.error("Error al confirmar:", err);
+    mostrarMensaje("❌ Error al confirmar reserva.", "red");
+  }
+}
+
+async function eliminarReserva(id) {
+  if (!confirm("¿Seguro que deseas eliminar esta reserva?")) return;
+  try {
+    const { error } = await supabase.from("reservas").delete().eq("id", id);
+    if (error) throw error;
+    mostrarMensaje("🗑️ Reserva eliminada correctamente.", "green");
+    cargarReservas();
+  } catch (err) {
+    console.error("Error al eliminar:", err);
+    mostrarMensaje("❌ Error al eliminar reserva.", "red");
+  }
+}
+
+// Mostrar mensajes dentro del panel
+function mostrarMensaje(texto, color = "green") {
+  const msg = document.getElementById("reservas-msg");
+  msg.textContent = texto;
+  msg.style.color = color;
+  setTimeout(() => (msg.textContent = ""), 3000);
+}
+
+// Cargar reservas al abrir la pestaña
+document.querySelectorAll(".tab-btn").forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    const tab = e.target.dataset.tab;
+    if (tab === "reservas-tab") {
+      cargarReservas();
+    }
+  });
+});
+
 
 // ===================================================
 // =============== LOGOS DESDE SUPABASE ===============
