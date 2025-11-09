@@ -613,6 +613,7 @@ tipoContenidoSelect.innerHTML = `
   <option value="logo_ig">Logo Instagram</option>
   <option value="logo_face">Logo Facebook</option>
   <option value="logo_pestaña">Logo Pestaña</option>
+  <option value="Qr_pago">Qr de Pago</option>
 `;
 
 async function cargarContenidoPublico() {
