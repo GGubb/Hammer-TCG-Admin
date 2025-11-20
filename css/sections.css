@@ -1049,6 +1049,80 @@
   border-radius: 6px;
 }
 
+/* === MODAL FULLSCREEN === */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.85);
+
+  justify-content: center;
+  align-items: center;
+}
+
+/* Contenedor centrado pero SIN límite de tamaño */
+.modal-content {
+  position: relative;
+  max-width: 95vw;
+  max-height: 95vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Imagen ajustada al tamaño de pantalla */
+#modal-imagen {
+  max-width: 95vw;
+  max-height: 95vh;
+
+  width: auto;
+  height: auto;
+
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(255,255,255,0.25);
+}
+
+/* Botón X tipo comunidad */
+.cerrar-modal {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+
+  background: #ffb347;
+  color: #1a1a1a;
+
+  width: 38px;
+  height: 38px;
+
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 22px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(0,0,0,0.6);
+  z-index: 10000;
+}
+
+.cerrar-modal:hover {
+  background: #ffd27f;
+}
+
+
+/* Botón en tabla */
+.btn-ver-comprobante {
+  background-color: #2980b9;
+  color: white;
+}
+
+.btn-ver-comprobante:hover {
+  background-color: #3498db;
+}
 
 
 /* ========== BASE PARA TABS ========== */
