@@ -1102,7 +1102,6 @@ async function cargarReservas() {
     contenedor.classList.remove("vacio");
 
     if (!data.length) {
-      // ⚡️ Aplica la clase "vacio" en lugar de solo texto
       contenedor.classList.add("vacio");
       return;
     }
@@ -1120,6 +1119,11 @@ async function cargarReservas() {
         <p><strong>Estado:</strong> ${reserva.confirmada ? "✅ Confirmada" : "⏳ Pendiente"}</p>
         <div class="acciones">
           ${
+            reserva.comprobante
+              ? `<button class="btn-ver-comprobante" data-path="${reserva.comprobante}">Ver comprobante</button>`
+              : ""
+          }
+          ${
             !reserva.confirmada
               ? `<button class="btn-confirmar" data-id="${reserva.id}">Confirmar</button>`
               : ""
@@ -1130,7 +1134,15 @@ async function cargarReservas() {
       contenedor.appendChild(div);
     });
 
-    // Asignar eventos a los botones
+    // BOTÓN VER COMPROBANTE
+    document.querySelectorAll(".btn-ver-comprobante").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const path = e.target.dataset.path;
+        verComprobante(path);
+      });
+    });
+
+    // BOTONES CONFIRMAR
     document.querySelectorAll(".btn-confirmar").forEach((btn) => {
       btn.addEventListener("click", async (e) => {
         const id = e.target.dataset.id;
@@ -1138,16 +1150,96 @@ async function cargarReservas() {
       });
     });
 
+    // BOTONES ELIMINAR
     document.querySelectorAll(".btn-eliminar").forEach((btn) => {
       btn.addEventListener("click", async (e) => {
         const id = e.target.dataset.id;
         await eliminarReserva(id);
       });
     });
+
   } catch (err) {
     console.error("Error al cargar reservas:", err);
   }
 }
+
+// ==========================
+//  VER COMPROBANTE (MODAL)
+// ==========================
+
+async function verComprobante(path) {
+  try {
+    let realPath = path;
+
+    // Si viene un URL completo, extraer solo el path real usado por Supabase
+    if (path.startsWith("http")) {
+      const parts = path.split("/comprobantes/");
+      realPath = parts[1]; // <-- ahora contiene solo "archivo.png"
+    }
+
+    const { data, error } = await supabase
+      .storage
+      .from("comprobantes")
+      .createSignedUrl(realPath, 60 * 5);
+
+    if (error) throw error;
+
+    const url = data.signedUrl;
+
+    const extension = realPath.split(".").pop().toLowerCase();
+    const esPDF = extension === "pdf";
+
+    const modal = document.getElementById("modal-comprobante");
+    const img = document.getElementById("modal-imagen");
+    const iframePrevio = document.getElementById("modal-pdf");
+
+    if (iframePrevio) iframePrevio.remove();
+
+    if (esPDF) {
+      img.style.display = "none";
+
+      const iframe = document.createElement("iframe");
+      iframe.id = "modal-pdf";
+      iframe.src = url;
+      iframe.style.width = "100%";
+      iframe.style.height = "80vh";
+      iframe.style.border = "none";
+      iframe.style.borderRadius = "8px";
+
+      document.querySelector(".modal-content").appendChild(iframe);
+    } else {
+      img.src = url;
+      img.style.display = "block";
+    }
+
+    modal.style.display = "flex";
+  } catch (err) {
+    console.error("Error al cargar comprobante:", err);
+    mostrarMensaje("❌ No se pudo cargar el comprobante.", "red");
+  }
+}
+
+// Cerrar modal
+const modal = document.getElementById("modal-comprobante");
+const cerrar = document.querySelector(".cerrar-modal");
+
+if (cerrar) {
+  cerrar.addEventListener("click", () => {
+    modal.style.display = "none";
+    document.getElementById("modal-imagen").src = "";
+  });
+
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.style.display = "none";
+      document.getElementById("modal-imagen").src = "";
+    }
+  });
+}
+
+// ==========================
+//  CONFIRMAR RESERVA
+// ==========================
 
 async function confirmarReserva(id) {
   try {
@@ -1165,20 +1257,59 @@ async function confirmarReserva(id) {
   }
 }
 
+// ==========================
+//  ELIMINAR RESERVA
+// ==========================
+
 async function eliminarReserva(id) {
   if (!confirm("¿Seguro que deseas eliminar esta reserva?")) return;
+
   try {
-    const { error } = await supabase.from("reservas").delete().eq("id", id);
-    if (error) throw error;
-    mostrarMensaje("🗑️ Reserva eliminada correctamente.", "green");
+    // 1️⃣ Obtener reserva
+    const { data: reserva, error: errorSelect } = await supabase
+      .from("reservas")
+      .select("comprobante")
+      .eq("id", id)
+      .single();
+
+    if (errorSelect) throw errorSelect;
+
+    // 2️⃣ Extraer el nombre del archivo desde la URL
+    let nombreArchivo = null;
+
+    if (reserva?.comprobante) {
+      nombreArchivo = reserva.comprobante.split("/").pop(); 
+      console.log("Archivo a borrar:", nombreArchivo);
+
+      // 3️⃣ Borrar archivo del bucket
+      const { error: errorBucket } = await supabase.storage
+        .from("comprobantes")
+        .remove([nombreArchivo]);
+
+      if (errorBucket) console.warn("Error al borrar del bucket:", errorBucket);
+    }
+
+    // 4️⃣ Borrar fila en la tabla
+    const { error: errorDelete } = await supabase
+      .from("reservas")
+      .delete()
+      .eq("id", id);
+
+    if (errorDelete) throw errorDelete;
+
+    mostrarMensaje("🗑️ Reserva y comprobante eliminados correctamente.", "green");
     cargarReservas();
+
   } catch (err) {
     console.error("Error al eliminar:", err);
     mostrarMensaje("❌ Error al eliminar reserva.", "red");
   }
 }
 
-// Mostrar mensajes dentro del panel
+// ==========================
+//  MENSAJES DEL PANEL
+// ==========================
+
 function mostrarMensaje(texto, color = "green") {
   const msg = document.getElementById("reservas-msg");
   msg.textContent = texto;
@@ -1186,7 +1317,10 @@ function mostrarMensaje(texto, color = "green") {
   setTimeout(() => (msg.textContent = ""), 3000);
 }
 
-// Cargar reservas al abrir la pestaña
+// ==========================
+//  CARGAR RESERVAS AL ABRIR TAB
+// ==========================
+
 document.querySelectorAll(".tab-btn").forEach((btn) => {
   btn.addEventListener("click", (e) => {
     const tab = e.target.dataset.tab;
